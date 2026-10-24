@@ -1,0 +1,711 @@
+================================================================================
+ARSITEKTUR SISTEM SMART GREENHOUSE IoT
+Hardware & Software Architecture Documentation
+================================================================================
+
+================================================================================
+1. ARSITEKTUR HARDWARE - DIAGRAM BLOK SISTEM
+================================================================================
+
+                        CLOUD LAYER
+                 ┌─────────────────────────┐
+                 │   MQTT Broker Server    │
+                 │   InfluxDB Time-Series  │
+                 │   Node.js API Server    │
+                 └───────────┬─────────────┘
+                             │
+                     WiFi / Internet
+                             │
+                 ┌───────────┴─────────────┐
+                 │                         │
+            EDGE COMPUTING LAYER           │
+         ┌───────────────────────┐         │
+         │   ESP32 DevKit v1     │         │
+         │   - Dual Core 240MHz  │         │
+         │   - WiFi b/g/n        │         │
+         │   - 18x ADC 12-bit    │         │
+         │   - 34x GPIO          │         │
+         └─────┬────────────┬────┘         │
+               │            │              │
+        SENSOR LAYER   ACTUATOR LAYER      │
+               │            │              │
+    ┌──────────┴─────┐  ┌───┴──────────┐  │
+    │                │  │              │  │
+┌───┴───┐  ┌────┴────┐ ┌┴──────┐ ┌────┴──┐│
+│DHT22/ │  │Capacitive│ │4-Ch   │ │Water  ││
+│SHT31  │  │Soil     │ │Relay  │ │Pump   ││
+│Temp/RH│  │Moisture │ │Module │ │12V DC ││
+└───────┘  └─────────┘ └┬──────┘ └───────┘│
+                        │                 │
+┌─────────┐  ┌──────────┴┐  ┌─────────┐  │
+│BH1750   │  │Exhaust Fan│  │Grow LED │  │
+│Light    │  │12V 0.15A  │  │12V      │  │
+│Sensor   │  └───────────┘  └─────────┘  │
+└─────────┘                               │
+                                          │
+            USER INTERFACE LAYER          │
+         ┌────────────────────────────────┴┐
+         │  Web Dashboard (React.js)       │
+         │  Mobile App (Responsive)        │
+         │  Alert & Notification System    │
+         └─────────────────────────────────┘
+
+
+================================================================================
+2. SPESIFIKASI KOMPONEN HARDWARE
+================================================================================
+
+--------------------------------------------------------------------------------
+2.1 MIKROKONTROLER
+--------------------------------------------------------------------------------
+
+ESP32 DevKit v1 (30-pin)
+┌─────────────────────────────────────────────────────────────────┐
+│ Parameter              │ Spesifikasi                            │
+├────────────────────────┼────────────────────────────────────────┤
+│ CPU                    │ Dual-core Xtensa LX6, 240 MHz         │
+│ SRAM                   │ 520 KB                                 │
+│ Flash                  │ 4 MB                                   │
+│ WiFi                   │ 802.11 b/g/n (2.4 GHz), up to 150Mbps │
+│ Bluetooth              │ BLE 4.2                                │
+│ GPIO                   │ 34 pins (input/output)                │
+│ ADC                    │ 18 channels, 12-bit resolution        │
+│ PWM                    │ 16 channels                            │
+│ I2C/SPI/UART           │ Multiple interfaces                    │
+│ Operating Voltage      │ 3.3V logic, 5V input via USB/Vin     │
+│ Deep Sleep Current     │ <100 µA (untuk future battery mode)   │
+│ Harga                  │ Rp 65.000 - Rp 85.000                 │
+└────────────────────────┴────────────────────────────────────────┘
+
+PIN ASSIGNMENT (Akan didefinisikan di kode):
+- GPIO 22: SCL (I2C untuk SHT31/BH1750)
+- GPIO 21: SDA (I2C untuk SHT31/BH1750)
+- GPIO 4:  DHT22 data pin (alternatif jika pakai DHT22)
+- GPIO 34: Analog input untuk Soil Moisture sensor
+- GPIO 35: Analog input untuk LDR (alternatif BH1750)
+- GPIO 25: Relay 1 control (Water Pump)
+- GPIO 26: Relay 2 control (Exhaust Fan)
+- GPIO 27: Relay 3 control (Grow Light)
+- GPIO 14: Relay 4 control (Spare/Future expansion)
+
+
+--------------------------------------------------------------------------------
+2.2 SENSOR SUHU DAN KELEMBAPAN UDARA
+--------------------------------------------------------------------------------
+
+OPSI A: DHT22 (AM2302) - Budget-Friendly
+┌─────────────────────────────────────────────────────────────────┐
+│ Parameter              │ Spesifikasi                            │
+├────────────────────────┼────────────────────────────────────────┤
+│ Temperature Range      │ -40°C to +80°C                        │
+│ Temperature Accuracy   │ ±0.5°C                                │
+│ Humidity Range         │ 0-100% RH                             │
+│ Humidity Accuracy      │ ±2% RH                                │
+│ Sampling Rate          │ 0.5 Hz (setiap 2 detik)              │
+│ Interface              │ Single-wire digital (1-Wire protocol) │
+│ Operating Voltage      │ 3.3V - 5V                             │
+│ Harga                  │ Rp 35.000 - Rp 50.000                 │
+└────────────────────────┴────────────────────────────────────────┘
+
+Keunggulan: Murah, library mature, widely used
+Kekurangan: Sampling rate lambat, less reliable untuk industrial use
+
+OPSI B: SHT31 (Sensirion) - RECOMMENDED
+┌─────────────────────────────────────────────────────────────────┐
+│ Parameter              │ Spesifikasi                            │
+├────────────────────────┼────────────────────────────────────────┤
+│ Temperature Range      │ -40°C to +125°C                       │
+│ Temperature Accuracy   │ ±0.2°C (typ)                          │
+│ Humidity Range         │ 0-100% RH                             │
+│ Humidity Accuracy      │ ±2% RH (typ)                          │
+│ Sampling Rate          │ Up to 10 Hz                           │
+│ Interface              │ I2C (address 0x44 or 0x45)           │
+│ Operating Voltage      │ 2.4V - 5.5V                           │
+│ Harga                  │ Rp 85.000 - Rp 120.000                │
+└────────────────────────┴────────────────────────────────────────┘
+
+Keunggulan: Akurasi tinggi, fast sampling, I2C (bisa multiple sensor)
+Kekurangan: Lebih mahal
+
+REKOMENDASI: SHT31 untuk precision, atau DHT22 untuk tight budget
+
+
+--------------------------------------------------------------------------------
+2.3 SENSOR KELEMBAPAN TANAH
+--------------------------------------------------------------------------------
+
+Capacitive Soil Moisture Sensor v1.2 (Analog Output)
+┌─────────────────────────────────────────────────────────────────┐
+│ Parameter              │ Spesifikasi                            │
+├────────────────────────┼────────────────────────────────────────┤
+│ Type                   │ Capacitive (corrosion-resistant)      │
+│ Output                 │ Analog voltage 0-3V                   │
+│ Operating Voltage      │ 3.3V - 5V                             │
+│ Measurement Range      │ 0-100% volumetric water content       │
+│ Response Time          │ <1 second                             │
+│ Dimensions             │ 98mm x 23mm                           │
+│ Waterproof Rating      │ IP68 (sensor probe only)              │
+│ Harga                  │ Rp 25.000 - Rp 40.000                 │
+└────────────────────────┴────────────────────────────────────────┘
+
+Keunggulan: Tahan korosi dibanding resistive sensor, long-term reliable
+Instalasi: Insert vertikal ke dalam media tanam 5-7cm depth
+Kalibrasi: Diperlukan untuk konversi voltage → moisture % (air, dry soil)
+
+
+--------------------------------------------------------------------------------
+2.4 SENSOR INTENSITAS CAHAYA
+--------------------------------------------------------------------------------
+
+OPSI A: LDR (Light Dependent Resistor) + Voltage Divider
+┌─────────────────────────────────────────────────────────────────┐
+│ Parameter              │ Spesifikasi                            │
+├────────────────────────┼────────────────────────────────────────┤
+│ Type                   │ Photoresistor (CdS)                   │
+│ Resistance (Dark)      │ >1 MΩ                                 │
+│ Resistance (10 lux)    │ 10-20 kΩ                              │
+│ Resistance (100 lux)   │ 2-4 kΩ                                │
+│ Circuit                │ Voltage divider dengan 10kΩ resistor  │
+│ Harga                  │ Rp 2.000 - Rp 5.000                   │
+└────────────────────────┴────────────────────────────────────────┘
+
+Keunggulan: Sangat murah, sederhana
+Kekurangan: Non-linear response, perlu kalibrasi ke lux, spectral response lebar
+
+OPSI B: BH1750 Digital Light Sensor (I2C) - RECOMMENDED
+┌─────────────────────────────────────────────────────────────────┐
+│ Parameter              │ Spesifikasi                            │
+├────────────────────────┼────────────────────────────────────────┤
+│ Type                   │ Digital ambient light sensor          │
+│ Output                 │ I2C digital (address 0x23/0x5C)       │
+│ Measurement Range      │ 1 - 65535 lux                         │
+│ Resolution             │ 1 lux                                  │
+│ Accuracy               │ ±20% (relative to standard illum)     │
+│ Spectral Response      │ Human eye response curve              │
+│ Operating Voltage      │ 2.4V - 3.6V (3.3V compatible)         │
+│ Harga                  │ Rp 20.000 - Rp 35.000                 │
+└────────────────────────┴────────────────────────────────────────┘
+
+Keunggulan: Direct lux output, I2C simple interface, akurasi baik
+Kekurangan: Sedikit lebih mahal
+
+REKOMENDASI: BH1750 untuk precision dan ease of use
+
+
+--------------------------------------------------------------------------------
+2.5 MODUL RELAY
+--------------------------------------------------------------------------------
+
+4-Channel Relay Module 5V (Optocoupler Isolated)
+┌─────────────────────────────────────────────────────────────────┐
+│ Parameter              │ Spesifikasi                            │
+├────────────────────────┼────────────────────────────────────────┤
+│ Channels               │ 4 independent SPDT relays             │
+│ Control Voltage        │ 5V DC (logic level)                   │
+│ Trigger Type           │ Low-level trigger (active LOW)        │
+│ Load Rating            │ 250VAC 10A / 30VDC 10A per channel    │
+│ Isolation              │ Optocoupler PC817 (2500V)             │
+│ Indicator              │ LED per channel                       │
+│ Dimensions             │ 75mm x 55mm x 19mm                    │
+│ Harga                  │ Rp 45.000 - Rp 65.000                 │
+└────────────────────────┴────────────────────────────────────────┘
+
+CHANNEL ASSIGNMENT:
+- Relay 1 (CH1): Water Pump 12V DC
+- Relay 2 (CH2): Exhaust Fan 12V DC
+- Relay 3 (CH3): LED Grow Light 12V DC (optional)
+- Relay 4 (CH4): Spare (future expansion: heater, additional pump, etc.)
+
+CATATAN PENTING:
+- ESP32 GPIO output 3.3V, tetapi relay module umumnya 5V trigger
+- Solusi: Gunakan level shifter ATAU pilih relay module 3.3V compatible
+- Alternatif: Relay module dengan jumper untuk 3.3V/5V selection
+
+
+--------------------------------------------------------------------------------
+2.6 AKTUATOR
+--------------------------------------------------------------------------------
+
+A. Water Pump - Pompa Air DC Submersible
+┌─────────────────────────────────────────────────────────────────┐
+│ Parameter              │ Spesifikasi                            │
+├────────────────────────┼────────────────────────────────────────┤
+│ Voltage                │ 12V DC                                 │
+│ Current                │ 0.5A - 1A (tergantung model)          │
+│ Flow Rate              │ 3-5 L/min                             │
+│ Max Head               │ 2-3 meter                             │
+│ Tube Diameter          │ 6mm atau 8mm                          │
+│ Harga                  │ Rp 80.000 - Rp 120.000                │
+└────────────────────────┴────────────────────────────────────────┘
+
+Aplikasi: Irigasi drip/sprinkler untuk greenhouse
+Instalasi: Submersible di reservoir water tank
+
+B. Exhaust Fan - Ventilasi Udara
+┌─────────────────────────────────────────────────────────────────┐
+│ Parameter              │ Spesifikasi                            │
+├────────────────────────┼────────────────────────────────────────┤
+│ Voltage                │ 12V DC                                 │
+│ Current                │ 0.15A - 0.3A                          │
+│ Size                   │ 120mm x 120mm x 25mm (fan 12cm)       │
+│ Airflow                │ 80-100 CFM                            │
+│ Noise                  │ <30 dB                                │
+│ Harga                  │ Rp 60.000 - Rp 100.000                │
+└────────────────────────┴────────────────────────────────────────┘
+
+Aplikasi: Menurunkan suhu dan RH dengan exhaust air panas/lembab
+Instalasi: Mounting di dinding/roof greenhouse dengan duct
+
+C. LED Grow Light (OPTIONAL - untuk supplemental lighting)
+┌─────────────────────────────────────────────────────────────────┐
+│ Parameter              │ Spesifikasi                            │
+├────────────────────────┼────────────────────────────────────────┤
+│ Voltage                │ 12V DC                                 │
+│ Power                  │ 10W - 20W                             │
+│ Spectrum               │ Full spectrum atau red+blue           │
+│ Lumens                 │ 1000-2000 lm                          │
+│ Harga                  │ Rp 100.000 - Rp 200.000               │
+└────────────────────────┴────────────────────────────────────────┘
+
+Aplikasi: Supplemental lighting saat cloudy days atau early morning/late evening
+Control: PWM dimming capable (jika fitur advanced control diimplementasikan)
+
+
+--------------------------------------------------------------------------------
+2.7 POWER SUPPLY SYSTEM
+--------------------------------------------------------------------------------
+
+A. Main Power Supply - Adaptor 12V DC
+┌─────────────────────────────────────────────────────────────────┐
+│ Parameter              │ Spesifikasi                            │
+├────────────────────────┼────────────────────────────────────────┤
+│ Input                  │ 220VAC 50Hz                           │
+│ Output                 │ 12V DC, 3A (36W)                      │
+│ Protection             │ Over-current, over-voltage, short     │
+│ Connector              │ DC barrel jack 5.5mm x 2.1mm          │
+│ Harga                  │ Rp 50.000 - Rp 80.000                 │
+└────────────────────────┴────────────────────────────────────────┘
+
+Load Calculation:
+- Water Pump: 12V x 0.8A = 9.6W
+- Exhaust Fan: 12V x 0.2A = 2.4W
+- LED Grow Light: 12V x 1.5A = 18W
+- ESP32 (via step-down): 5V x 0.5A = 2.5W
+- Total Peak: ~33W → 3A @ 12V sufficient
+
+B. Step-Down Converter (Buck Converter) 12V → 5V
+┌─────────────────────────────────────────────────────────────────┐
+│ Parameter              │ Spesifikasi                            │
+├────────────────────────┼────────────────────────────────────────┤
+│ Input Voltage          │ 6-24V DC                              │
+│ Output Voltage         │ 5V DC (adjustable via potentiometer)  │
+│ Output Current         │ 3A max (continuous 2A safe)           │
+│ Efficiency             │ >92%                                  │
+│ Type                   │ LM2596 atau XL4015 module             │
+│ Harga                  │ Rp 15.000 - Rp 25.000                 │
+└────────────────────────┴────────────────────────────────────────┘
+
+Purpose: Convert 12V dari main PSU ke 5V untuk ESP32 + sensor supply
+Instalasi: Pastikan voltage di-adjust ke 5.0V ±0.1V sebelum connect ke ESP32
+
+
+--------------------------------------------------------------------------------
+2.8 ENCLOSURE DAN PROTEKSI
+--------------------------------------------------------------------------------
+
+A. Junction Box untuk Controller
+┌─────────────────────────────────────────────────────────────────┐
+│ Item                   │ Spesifikasi                            │
+├────────────────────────┼────────────────────────────────────────┤
+│ Type                   │ ABS plastic enclosure                 │
+│ Size                   │ 200mm x 150mm x 75mm                  │
+│ IP Rating              │ IP55 (dust & water jet protected)     │
+│ Features               │ Cable glands, mounting holes          │
+│ Harga                  │ Rp 80.000 - Rp 120.000                │
+└────────────────────────┴────────────────────────────────────────┘
+
+Isi: ESP32, relay module, power supply, terminal blocks
+
+B. Sensor Housing
+- DHT22/SHT31: Radiation shield (PVC pipe dengan ventilation holes)
+- Soil Moisture: Direct burial dengan silicone seal pada cable entry
+- BH1750: Clear plastic dome untuk weatherproof tetapi light-transmissive
+
+
+================================================================================
+3. ARSITEKTUR SOFTWARE
+================================================================================
+
+--------------------------------------------------------------------------------
+3.1 FIRMWARE ESP32 (Arduino Framework)
+--------------------------------------------------------------------------------
+
+STRUKTUR KODE:
+
+smart_greenhouse_esp32.ino
+├── [LIBRARIES]
+│   - WiFi.h (ESP32 WiFi connectivity)
+│   - PubSubClient.h (MQTT client)
+│   - Wire.h (I2C communication)
+│   - Adafruit_SHT31.h (SHT31 sensor)
+│   - BH1750.h (BH1750 light sensor)
+│   - ArduinoJson.h (JSON parsing/creation)
+│   - EEPROM.h (Configuration storage)
+│
+├── [CONFIGURATION]
+│   - WiFi credentials (SSID, password)
+│   - MQTT broker (host, port, credentials)
+│   - Sensor pins definition
+│   - Control thresholds (temp, humidity, soil moisture, light)
+│   - Timing parameters (reading interval, control intervals)
+│
+├── [GLOBAL VARIABLES]
+│   - Sensor objects
+│   - MQTT client object
+│   - Sensor reading variables
+│   - Actuator state variables
+│   - Timer variables
+│
+├── [SETUP FUNCTION]
+│   - Serial communication init
+│   - GPIO pin modes setup
+│   - I2C bus init
+│   - Sensor initialization
+│   - WiFi connection
+│   - MQTT connection
+│   - Initial sensor reading
+│
+├── [LOOP FUNCTION]
+│   - MQTT connection check & reconnect
+│   - MQTT loop (message handling)
+│   - Sensor reading (time-based)
+│   - Control logic execution
+│   - Data publish to MQTT
+│   - Watchdog pet
+│
+├── [SENSOR FUNCTIONS]
+│   - readTemperatureHumidity() → SHT31/DHT22 reading
+│   - readSoilMoisture() → Capacitive sensor reading + calibration
+│   - readLightIntensity() → BH1750/LDR reading
+│   - validateSensorData() → Check for error/out-of-range values
+│
+├── [CONTROL FUNCTIONS]
+│   - controlWaterPump() → Auto-irrigation based on soil moisture
+│   - controlExhaustFan() → Cooling based on temp/humidity
+│   - controlGrowLight() → Supplemental light based on intensity
+│   - applyHysteresis() → Prevent rapid actuator cycling
+│
+├── [MQTT FUNCTIONS]
+│   - mqttConnect() → Connect/reconnect to broker
+│   - mqttCallback() → Handle incoming commands from dashboard
+│   - publishSensorData() → Publish JSON payload to topic
+│   - publishStatus() → System status/heartbeat
+│   - subscribeToCommands() → Subscribe to control topics
+│
+├── [UTILITY FUNCTIONS]
+│   - calibrateSoilMoisture() → Convert ADC → moisture %
+│   - checkWiFiConnection() → Maintain WiFi connectivity
+│   - systemReset() → Software reset on fatal error
+│   - logToSerial() → Debug logging
+│
+└── [OTA UPDATE (Optional)]
+    - OTA setup for remote firmware update
+
+
+FLOW DIAGRAM - Control Logic:
+
+┌──────────────────────────────────────────────────────────────┐
+│                     MAIN LOOP (every 5s)                     │
+└────────────────────┬─────────────────────────────────────────┘
+                     │
+         ┌───────────┴───────────┐
+         │   Read All Sensors    │
+         └───────────┬───────────┘
+                     │
+         ┌───────────▼───────────┐
+         │  Publish to MQTT      │
+         └───────────┬───────────┘
+                     │
+         ┌───────────▼───────────────────┐
+         │  CONTROL DECISION TREE        │
+         └───┬───────────────────────┬───┘
+             │                       │
+    ┌────────▼────────┐     ┌────────▼────────┐
+    │ IRRIGATION       │     │ CLIMATE CONTROL │
+    │ CONTROL          │     │                 │
+    └────┬─────────────┘     └────┬────────────┘
+         │                        │
+         │                        │
+    ┌────▼──────────────┐    ┌────▼──────────────┐
+    │ Soil < Threshold? │    │ Temp > Threshold? │
+    │ YES → Pump ON     │    │ YES → Fan ON      │
+    │ NO → Pump OFF     │    │ NO → Fan OFF      │
+    └───────────────────┘    └───────────────────┘
+         │                        │
+         └────────┬───────────────┘
+                  │
+         ┌────────▼────────┐
+         │  Update Relay   │
+         │  States         │
+         └─────────────────┘
+
+
+CONTROL ALGORITHM - Hysteresis Example (Soil Moisture):
+
+Target Soil Moisture: 70%
+Hysteresis Band: ±5%
+
+IF soil_moisture < 65%:
+    pump_state = ON
+ELSE IF soil_moisture > 75%:
+    pump_state = OFF
+ELSE:
+    pump_state = MAINTAIN (no change)
+
+Rationale: Mencegah rapid cycling relay yang dapat shorten lifespan
+
+
+--------------------------------------------------------------------------------
+3.2 MQTT TOPIC STRUCTURE
+--------------------------------------------------------------------------------
+
+PUBLISH Topics (ESP32 → Cloud):
+
+greenhouse/[device_id]/sensors/temperature      → float (°C)
+greenhouse/[device_id]/sensors/humidity         → float (%)
+greenhouse/[device_id]/sensors/soil_moisture    → float (%)
+greenhouse/[device_id]/sensors/light_intensity  → int (lux)
+greenhouse/[device_id]/actuators/pump           → bool (0/1)
+greenhouse/[device_id]/actuators/fan            → bool (0/1)
+greenhouse/[device_id]/actuators/light          → bool (0/1)
+greenhouse/[device_id]/status/online            → string (timestamp)
+greenhouse/[device_id]/status/wifi_rssi         → int (dBm)
+greenhouse/[device_id]/status/uptime            → int (seconds)
+
+SUBSCRIBE Topics (Cloud → ESP32):
+
+greenhouse/[device_id]/commands/pump            → "ON" | "OFF" | "AUTO"
+greenhouse/[device_id]/commands/fan             → "ON" | "OFF" | "AUTO"
+greenhouse/[device_id]/commands/light           → "ON" | "OFF" | "AUTO"
+greenhouse/[device_id]/config/thresholds        → JSON config update
+greenhouse/[device_id]/config/intervals         → JSON timing update
+greenhouse/[device_id]/system/restart           → trigger system reboot
+greenhouse/[device_id]/system/ota               → trigger OTA update
+
+
+PAYLOAD FORMAT (JSON):
+
+Example - Sensor Data Publish:
+{
+  "timestamp": "2026-09-29T07:45:23Z",
+  "device_id": "greenhouse_001",
+  "temperature": 26.5,
+  "humidity": 72.3,
+  "soil_moisture": 68.4,
+  "light_intensity": 25000,
+  "pump_state": 0,
+  "fan_state": 1,
+  "rssi": -65
+}
+
+
+--------------------------------------------------------------------------------
+3.3 CLOUD BACKEND ARCHITECTURE
+--------------------------------------------------------------------------------
+
+STACK:
+- OS: Linux Ubuntu 22.04 LTS
+- MQTT Broker: Eclipse Mosquitto 2.x
+- Database: InfluxDB 2.x (time-series data)
+- API Server: Node.js 18.x + Express.js
+- Process Manager: PM2
+
+COMPONENTS:
+
+A. MQTT Broker (Mosquitto)
+   - Port 1883 (MQTT) dan 8883 (MQTTS with TLS)
+   - Authentication: username/password atau client certificates
+   - Bridge mode untuk multi-site deployment (future)
+
+B. Data Ingestion Service (Node.js)
+   - Subscribe to all greenhouse/+/sensors/# topics
+   - Parse JSON payload
+   - Write to InfluxDB dengan proper tags/fields
+   - Handle data validation dan error logging
+
+C. RESTful API Server (Express.js)
+   - GET /api/devices → List all registered greenhouses
+   - GET /api/devices/:id/latest → Latest sensor readings
+   - GET /api/devices/:id/history?start=&end= → Historical data
+   - POST /api/devices/:id/command → Send control command
+   - GET /api/analytics/summary → Dashboard summary statistics
+   - Authentication: JWT token-based
+
+D. InfluxDB Schema
+   Measurement: greenhouse_sensors
+   Tags: device_id, location (future multi-site)
+   Fields: temperature, humidity, soil_moisture, light_intensity,
+           pump_state, fan_state, light_state
+   Timestamp: Unix epoch nanoseconds
+
+
+--------------------------------------------------------------------------------
+3.4 FRONTEND DASHBOARD
+--------------------------------------------------------------------------------
+
+TECH STACK:
+- Framework: React.js 18 + TypeScript
+- Charting: Chart.js atau Recharts
+- State Management: React Context API atau Redux
+- Real-time: MQTT over WebSocket (mqtt.js library)
+- UI Components: Material-UI atau Ant Design
+- Hosting: Static hosting (Netlify/Vercel) atau self-hosted Nginx
+
+FEATURES:
+
+1. Real-Time Monitoring Dashboard
+   - Live gauge/meter untuk current readings
+   - Time-series line charts (last 24h, 7d, 30d)
+   - Actuator status indicators (ON/OFF dengan color coding)
+
+2. Control Panel
+   - Manual override switches (ON/OFF/AUTO mode per actuator)
+   - Threshold configuration sliders
+   - Timing interval settings
+
+3. Analytics Page
+   - Water consumption tracking (pump ON time)
+   - Energy usage estimation
+   - Parameter stability metrics (std dev, min/max)
+   - Comparative graphs (before/after automation)
+
+4. Alert/Notification Management
+   - Configure alert rules (e.g., temp > 35°C → send notification)
+   - Alert history log
+   - Email/SMS/Push notification integration (future)
+
+5. Settings & Configuration
+   - Device registration dan management
+   - User account management
+   - System logs viewer
+
+
+DASHBOARD LAYOUT (ASCII mockup):
+
+┌────────────────────────────────────────────────────────────────┐
+│  SMART GREENHOUSE DASHBOARD                    [User] [Logout] │
+├────────────────────────────────────────────────────────────────┤
+│ [Dashboard] [History] [Control] [Analytics] [Settings]         │
+├─────────────────────┬──────────────────────────────────────────┤
+│                     │                                          │
+│  CURRENT STATUS     │  ENVIRONMENTAL PARAMETERS (24h)          │
+│                     │                                          │
+│  🌡️ Temperature     │  ┌────────────────────────────────────┐ │
+│    26.5°C           │  │     Temperature (°C)                │ │
+│                     │  │ 30┤                                 │ │
+│  💧 Humidity        │  │ 25┤      ╱╲    ╱╲                 │ │
+│    72.3%            │  │ 20┤   ╱─╯  ╲──╯  ╲─               │ │
+│                     │  │ 15┴─────────────────────────────▶  │ │
+│  🌱 Soil Moisture   │  │     0h  6h  12h 18h 24h            │ │
+│    68.4%            │  └────────────────────────────────────┘ │
+│                     │                                          │
+│  ☀️ Light           │  ┌────────────────────────────────────┐ │
+│    25,000 lux       │  │     Humidity (%)                   │ │
+│                     │  │100┤                                 │ │
+│  ACTUATORS          │  │ 80┤  ╱──╲  ╱──╲                   │ │
+│  💦 Pump: OFF       │  │ 60┤─╯    ╲─╯    ╲──               │ │
+│  🌀 Fan: ON         │  │ 40┴─────────────────────────────▶  │ │
+│  💡 Light: OFF      │  │     0h  6h  12h 18h 24h            │ │
+│                     │  └────────────────────────────────────┘ │
+│                     │                                          │
+│  Last Update:       │  [View Full History] [Export CSV]       │
+│  2s ago             │                                          │
+└─────────────────────┴──────────────────────────────────────────┘
+
+
+================================================================================
+4. DATA FLOW & COMMUNICATION PROTOCOL
+================================================================================
+
+SEQUENCE DIAGRAM - Typical Operation:
+
+ESP32          MQTT Broker       Backend Service      Database     Dashboard
+  │                │                    │                 │            │
+  ├─Read Sensors───┤                    │                 │            │
+  │                │                    │                 │            │
+  ├─Publish────────►                    │                 │            │
+  │  (sensor data) │                    │                 │            │
+  │                │                    │                 │            │
+  │                ├─Forward────────────►                 │            │
+  │                │                    │                 │            │
+  │                │                    ├─Write Data──────►            │
+  │                │                    │   (InfluxDB)    │            │
+  │                │                    │                 │            │
+  │                │                    │                 │◄─Query────┤
+  │                │                    │                 │  (via API)│
+  │                │                    │                 │            │
+  │                │                    │◄────Fetch Data──┤            │
+  │                │                    │                 │            │
+  │                │                    ├─Return JSON─────────────────►
+  │                │                    │                 │            │
+  │                │◄────Subscribe──────┼─────────────────┼────────────┤
+  │                │  (real-time WS)    │                 │            │
+  │                │                    │                 │            │
+  │◄───Command─────┤◄───Publish─────────┼─────────────────┼────────────┤
+  │  (MQTT topic)  │ (user action)      │                 │            │
+  │                │                    │                 │            │
+  ├─Execute────────┤                    │                 │            │
+  │  (turn ON/OFF) │                    │                 │            │
+  │                │                    │                 │            │
+  ├─Publish────────►                    │                 │            │
+  │  (new state)   │                    │                 │            │
+
+
+NETWORK REQUIREMENTS:
+- ESP32 → MQTT Broker: Stable WiFi, ~1 KB/min data transfer
+- Latency: <500ms untuk command response (local network)
+- Bandwidth: Minimal (~10 KB/hour per device)
+- Reliability: MQTT QoS 1 (at least once delivery) untuk critical commands
+
+
+SECURITY CONSIDERATIONS:
+1. MQTT Authentication: Username/password minimum, TLS/SSL preferred
+2. Dashboard: HTTPS only, JWT token dengan expiration
+3. API: Rate limiting, input validation, SQL injection prevention
+4. ESP32: No hardcoded credentials (use EEPROM atau SPIFFS config file)
+5. Network: Firewall rules, close unnecessary ports, VPN untuk remote access
+
+
+================================================================================
+5. BILL OF MATERIALS (BOM) - HARDWARE SUMMARY
+================================================================================
+
+┌────┬──────────────────────────────┬─────┬──────────┬────────────┐
+│ No │ Komponen                     │ Qty │ Harga/u  │ Subtotal   │
+├────┼──────────────────────────────┼─────┼──────────┼────────────┤
+│ 1  │ ESP32 DevKit v1              │  1  │  75.000  │    75.000  │
+│ 2  │ SHT31 Temp/Humidity Sensor   │  1  │ 100.000  │   100.000  │
+│ 3  │ Capacitive Soil Moisture     │  1  │  35.000  │    35.000  │
+│ 4  │ BH1750 Light Sensor          │  1  │  25.000  │    25.000  │
+│ 5  │ 4-Channel Relay Module 5V    │  1  │  55.000  │    55.000  │
+│ 6  │ Water Pump 12V DC 5L/min     │  1  │ 100.000  │   100.000  │
+│ 7  │ Exhaust Fan 12V 120mm        │  1  │  80.000  │    80.000  │
+│ 8  │ LED Grow Light 12V 15W       │  1  │ 150.000  │   150.000  │
+│ 9  │ Power Supply 12V 3A          │  1  │  65.000  │    65.000  │
+│ 10 │ Step-Down 12V→5V 3A (LM2596) │  1  │  20.000  │    20.000  │
+│ 11 │ Junction Box IP55 200x150x75 │  1  │ 100.000  │   100.000  │
+│ 12 │ Cable AWG 22 (10m)           │  1  │  40.000  │    40.000  │
+│ 13 │ Terminal blocks, connectors  │  1  │  30.000  │    30.000  │
+│ 14 │ Waterproof cable glands      │  5  │   5.000  │    25.000  │
+│ 15 │ Mounting hardware & misc     │  1  │  50.000  │    50.000  │
+├────┴──────────────────────────────┴─────┴──────────┼────────────┤
+│                                        TOTAL HARDWARE│ 1.950.000  │
+└──────────────────────────────────────────────────────┴────────────┘
+
+Catatan: Harga estimasi, dapat bervariasi tergantung supplier dan lokasi
+Belum termasuk: PCB custom, soldering supplies, tools
+
+
+================================================================================
+END OF ARCHITECTURE DOCUMENTATION
+================================================================================

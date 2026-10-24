@@ -1,0 +1,72 @@
+No,Kategori,Nama Komponen,Spesifikasi,Qty,Harga Satuan (Rp),Subtotal (Rp),Supplier/Link
+1,Elektronika,ESP32 DevKit v1,30-pin dual-core 240MHz WiFi,1,75000,75000,Tokopedia/Bukalapak
+2,Elektronika,SHT31 Sensor,I2C Temp/Humidity ±0.2°C,1,100000,100000,Tokopedia
+3,Elektronika,Capacitive Soil Moisture Sensor,Analog output corrosion-resistant,1,35000,35000,Tokopedia
+4,Elektronika,BH1750 Light Sensor,I2C digital 1-65535 lux,1,25000,25000,Tokopedia
+5,Elektronika,4-Channel Relay Module,5V optocoupler isolated 10A,1,55000,55000,Tokopedia
+6,Elektronika,Water Pump DC 12V,Submersible 5L/min,1,100000,100000,Tokopedia
+7,Elektronika,Exhaust Fan 12V,120mm 80-100 CFM,1,80000,80000,Tokopedia
+8,Elektronika,LED Grow Light 12V,15W full spectrum,1,150000,150000,Tokopedia
+9,Elektronika,Power Supply 12V 3A,220VAC input DC output,1,65000,65000,Tokopedia
+10,Elektronika,Step-Down LM2596,12V to 5V 3A converter,1,20000,20000,Tokopedia
+11,Elektronika,Breadboard 400 points,Solderless prototyping,1,15000,15000,Tokopedia
+12,Elektronika,Jumper Wire Set,M-M M-F 40pcs,1,25000,25000,Tokopedia
+13,Elektronika,Resistor Kit,10Ω to 1MΩ assorted,1,20000,20000,Tokopedia
+14,Elektronika,Capacitor Kit,Electrolytic + ceramic,1,25000,25000,Tokopedia
+15,Elektronika,LED Indicator,Red Green Yellow 5mm,10,1000,10000,Tokopedia
+16,Elektronika,Push Button,Momentary tactile switch,5,2000,10000,Tokopedia
+17,Elektronika,Terminal Block 2-pin,Screw type 5mm pitch,10,3000,30000,Tokopedia
+18,Mekanikal,Junction Box IP55,ABS 200x150x75mm,1,100000,100000,Tokopedia
+19,Mekanikal,Plastic Enclosure Small,100x68mm sensor housing,2,25000,50000,Tokopedia
+20,Mekanikal,PVC Pipe 3 inch,1 meter radiation shield,1,30000,30000,Toko Bangunan
+21,Mekanikal,Cable Gland PG7,Waterproof entry point,5,5000,25000,Tokopedia
+22,Mekanikal,Flexible Tubing 8mm,5 meter water delivery,1,40000,40000,Toko Bangunan
+23,Mekanikal,Drip Nozzle,Irrigation emitter,10,3000,30000,Toko Pertanian
+24,Mekanikal,Water Tank 20L,Reservoir container,1,50000,50000,Toko Bangunan
+25,Mekanikal,Mounting Bracket,L-bracket hardware set,1,35000,35000,Toko Bangunan
+26,Mekanikal,Cable AWG 22,10 meter stranded,1,40000,40000,Tokopedia
+27,Mekanikal,Power Cable AWG 18,5 meter actuator power,1,25000,25000,Tokopedia
+28,Mekanikal,Cable Ties 200mm,Pack of 100,1,15000,15000,Tokopedia
+29,Mekanikal,Heat Shrink Tube,Assorted sizes,1,20000,20000,Tokopedia
+30,Mekanikal,Silicone Sealant,Waterproof tube,1,25000,25000,Toko Bangunan
+31,Mekanikal,Screws & Bolts,M3 M4 M5 assorted,1,30000,30000,Toko Bangunan
+32,Mekanikal,Velcro Strips,Adhesive back 1m,1,20000,20000,Tokopedia
+33,Mekanikal,Foam Tape,Double-sided 3m,1,15000,15000,Tokopedia
+34,Tools,Soldering Iron 60W,Temperature controlled,1,80000,80000,Tokopedia
+35,Tools,Solder Wire 60/40,50g tin-lead 0.8mm,1,25000,25000,Tokopedia
+36,Tools,Desoldering Pump,Suction tool,1,15000,15000,Tokopedia
+37,Tools,Wire Stripper,Multi-function pliers,1,35000,35000,Tokopedia
+38,Tools,Digital Multimeter,Voltage current resistance,1,75000,75000,Tokopedia
+39,Tools,USB Cable Micro-B,2 meter programming,2,20000,40000,Tokopedia
+40,Consumables,Masking Tape,Electrical tape roll,1,15000,15000,Tokopedia
+41,Consumables,Permanent Marker,Set of 3 colors,1,20000,20000,Tokopedia
+42,Consumables,PCB Prototype Board,5x7cm FR4,2,10000,20000,Tokopedia
+43,Consumables,Flux Paste,Soldering aid 10g,1,30000,30000,Tokopedia
+44,Consumables,Anti-static Wrist Strap,ESD protection,1,15000,15000,Tokopedia
+45,Consumables,Storage Box 24 Grid,Component organizer,1,30000,30000,Tokopedia
+46,Testing,Reference Thermometer,Digital ±0.1°C,1,100000,100000,Sewa/Beli
+47,Testing,Reference Hygrometer,Digital ±2% RH,1,80000,80000,Sewa/Beli
+48,Testing,Lux Meter,Portable rental 1 week,1,120000,120000,Sewa
+49,Testing,pH Meter Digital,Soil/water optional,1,150000,150000,Optional
+50,Testing,Measuring Cup 1L,Graduated plastic,2,15000,30000,Toko
+51,Testing,Stopwatch Digital,Timer function,1,25000,25000,Toko
+52,Testing,IR Thermometer,Non-contact temp,1,75000,75000,Tokopedia
+53,Infrastructure,VPS 2vCPU 2GB,Cloud server 6 months,6,75000,450000,DigitalOcean
+54,Infrastructure,Domain Registration,.com or .id 1 year,1,150000,150000,Niagahoster
+55,Documentation,Printing Report,100 pages color binding,1,50000,50000,Percetakan
+56,Documentation,Poster A1,Full color 2 copies,2,50000,100000,Percetakan
+57,Documentation,Banner Roll-up,60x160cm display,1,150000,150000,Percetakan
+58,Documentation,Video Production,Rental 2 days,1,200000,200000,Sewa/Smartphone
+59,Documentation,Canva Pro,1 month subscription,1,50000,50000,Canva.com
+60,Documentation,Travel Local,2 person-days site,2,75000,150000,Transport
+61,Documentation,Miscellaneous,Flash drive folders,1,50000,50000,Toko
+62,Operasional,Seedlings,Lettuce/vegetable 200pcs,200,500,100000,Nursery
+63,Operasional,Growing Media,Cocopeat 50L bag,1,50000,50000,Toko Pertanian
+64,Operasional,Nutrisi AB Mix,5L concentrate hydroponic,1,80000,80000,Toko Pertanian
+65,Operasional,Net Pot 5cm,Hydroponic NFT,200,500,100000,Toko Pertanian
+66,Operasional,UV Plastic,Greenhouse covering 5m,5,15000,75000,Toko Pertanian
+67,Operasional,Neem Oil,Organic pesticide,1,50000,50000,Toko Pertanian
+68,Operasional,Electricity 2mo,50 kWh/month @Rp1500,2,75000,150000,PLN
+69,Operasional,Water 2mo,Estimated usage,2,25000,50000,PDAM
+70,Contingency,Reserve Fund,10% total for unexpected,1,450000,450000,Buffer
+,,,,,GRAND TOTAL,4825000,

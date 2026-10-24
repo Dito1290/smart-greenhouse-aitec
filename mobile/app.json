@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "Greenhouse Companion",
+    "slug": "greenhouse-companion",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "id.ac.polinela.greenhousecompanion"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E3F1E8",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "id.ac.polinela.greenhousecompanion"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Mikrofon dipakai hanya saat Anda menekan tombol mikrofon untuk bertanya ke asisten tanaman.",
+          "recordAudioAndroid": true,
+          "enableBackgroundRecording": false
+        }
+      ],
+      "expo-secure-store",
+      "expo-font",
+      "expo-asset"
+    ]
+  }
+}

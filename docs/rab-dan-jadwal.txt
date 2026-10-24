@@ -1,0 +1,596 @@
+================================================================================
+RENCANA ANGGARAN BIAYA (RAB) DAN JADWAL KEGIATAN
+Smart Greenhouse IoT - AITeC Competition
+================================================================================
+
+================================================================================
+A. RENCANA ANGGARAN BIAYA DETAIL
+================================================================================
+
+--------------------------------------------------------------------------------
+KATEGORI 1: HARDWARE - ELEKTRONIKA
+--------------------------------------------------------------------------------
+No  Item                              Qty  Harga Satuan  Subtotal    Keterangan
+--------------------------------------------------------------------------------
+1.1 ESP32 DevKit v1 (30-pin)          1    Rp  75.000   Rp  75.000  Tokopedia/Bukalapak
+1.2 SHT31 Temp/Humidity Sensor I2C    1    Rp 100.000   Rp 100.000  Akurasi ±0.2°C
+1.3 Capacitive Soil Moisture Sensor   1    Rp  35.000   Rp  35.000  Corrosion resistant
+1.4 BH1750 Digital Light Sensor I2C   1    Rp  25.000   Rp  25.000  1-65535 lux range
+1.5 4-Channel Relay Module 5V         1    Rp  55.000   Rp  55.000  Opto-isolated
+1.6 Water Pump DC 12V 5L/min          1    Rp 100.000   Rp 100.000  Submersible type
+1.7 Exhaust Fan 12V 120mm             1    Rp  80.000   Rp  80.000  Low noise <30dB
+1.8 LED Grow Light 12V 15W            1    Rp 150.000   Rp 150.000  Full spectrum
+1.9 Power Supply 12V 3A Adaptor       1    Rp  65.000   Rp  65.000  220V AC input
+1.10 Step-Down Converter LM2596        1    Rp  20.000   Rp  20.000  12V→5V 3A
+1.11 Breadboard 400 tie-points         1    Rp  15.000   Rp  15.000  Untuk prototyping
+1.12 Jumper wires set (M-M, M-F)       1    Rp  25.000   Rp  25.000  40 pcs per set
+1.13 Resistor assortment kit           1    Rp  20.000   Rp  20.000  10Ω - 1MΩ
+1.14 Capacitor kit (electrolytic, ceramic) 1 Rp 25.000   Rp  25.000  Filtering & decoupling
+1.15 LED indicators (red, green, yellow)  10 Rp  1.000   Rp  10.000  Status indicators
+1.16 Push button switches              5    Rp  2.000   Rp  10.000  Manual override
+1.17 Screw terminal blocks 2-pin       10   Rp  3.000   Rp  30.000  Wiring connections
+--------------------------------------------------------------------------------
+SUBTOTAL KATEGORI 1:                                    Rp 840.000
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+KATEGORI 2: HARDWARE - MEKANIKAL & ENCLOSURE
+--------------------------------------------------------------------------------
+No  Item                              Qty  Harga Satuan  Subtotal    Keterangan
+--------------------------------------------------------------------------------
+2.1 Junction Box ABS 200x150x75mm IP55 1   Rp 100.000   Rp 100.000  Controller enclosure
+2.2 Plastic enclosure small 100x68mm   2   Rp  25.000   Rp  50.000  Sensor housing
+2.3 PVC pipe 3" diameter (1 meter)     1   Rp  30.000   Rp  30.000  Radiation shield
+2.4 Waterproof cable gland PG7         5   Rp   5.000   Rp  25.000  Cable entry points
+2.5 Flexible tubing 8mm diameter (5m)  1   Rp  40.000   Rp  40.000  Water delivery
+2.6 Drip irrigation nozzles            10  Rp   3.000   Rp  30.000  Water distribution
+2.7 Water reservoir tank 20L           1   Rp  50.000   Rp  50.000  Pump water source
+2.8 Mounting brackets & L-brackets     1   Rp  35.000   Rp  35.000  Hardware mounting
+2.9 Cable AWG 22 stranded (10 meter)   1   Rp  40.000   Rp  40.000  Sensor wiring
+2.10 Power cable AWG 18 (5 meter)      1   Rp  25.000   Rp  25.000  Actuator power
+2.11 Cable ties 200mm (pack of 100)    1   Rp  15.000   Rp  15.000  Cable management
+2.12 Heat shrink tube assortment       1   Rp  20.000   Rp  20.000  Wire protection
+2.13 Silicone sealant tube             1   Rp  25.000   Rp  25.000  Waterproofing
+2.14 Mounting screws & bolts set       1   Rp  30.000   Rp  30.000  M3, M4, M5 sizes
+2.15 Velcro strips adhesive back       1   Rp  20.000   Rp  20.000  Component mounting
+2.16 Foam tape double-sided            1   Rp  15.000   Rp  15.000  Vibration damping
+--------------------------------------------------------------------------------
+SUBTOTAL KATEGORI 2:                                    Rp 550.000
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+KATEGORI 3: CLOUD INFRASTRUCTURE & SERVICES (6 BULAN)
+--------------------------------------------------------------------------------
+No  Item                              Qty  Harga Satuan  Subtotal    Keterangan
+--------------------------------------------------------------------------------
+3.1 VPS Cloud Server 2vCPU 2GB RAM    6    Rp  75.000   Rp 450.000  DigitalOcean/Niagahoster
+    (per bulan)                        bulan                         Ubuntu 22.04 LTS
+3.2 Domain name .com/.id registration  1    Rp 150.000   Rp 150.000  1 year registration
+3.3 SSL Certificate (Let's Encrypt)    -    Rp      0    Rp      0   Free tier
+3.4 CloudFlare CDN (free tier)         -    Rp      0    Rp      0   DDoS protection
+3.5 MongoDB Atlas free tier            -    Rp      0    Rp      0   512MB storage
+    atau InfluxDB Cloud free tier
+3.6 Backup storage (Google Drive)      -    Rp      0    Rp      0   Free 15GB
+--------------------------------------------------------------------------------
+SUBTOTAL KATEGORI 3:                                    Rp 600.000
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+KATEGORI 4: DEVELOPMENT TOOLS & CONSUMABLES
+--------------------------------------------------------------------------------
+No  Item                              Qty  Harga Satuan  Subtotal    Keterangan
+--------------------------------------------------------------------------------
+4.1 Soldering iron 60W with stand     1    Rp  80.000   Rp  80.000  Temperature controlled
+4.2 Solder wire 60/40 tin-lead 50g    1    Rp  25.000   Rp  25.000  0.8mm diameter
+4.3 Desoldering pump (suction tool)    1    Rp  15.000   Rp  15.000  Untuk rework
+4.4 Wire stripper & cutter pliers      1    Rp  35.000   Rp  35.000  Multi-function tool
+4.5 Digital multimeter                 1    Rp  75.000   Rp  75.000  Voltage/current/resistance
+4.6 USB cable micro-B 2 meter          2    Rp  20.000   Rp  40.000  ESP32 programming
+4.7 Masking tape & electrical tape     1    Rp  15.000   Rp  15.000  Labeling & insulation
+4.8 Permanent markers set              1    Rp  20.000   Rp  20.000  Component labeling
+4.9 PCB prototype board 5x7cm          2    Rp  10.000   Rp  20.000  Semi-permanent assembly
+4.10 Flux paste & cleaning solution    1    Rp  30.000   Rp  30.000  Soldering aid
+4.11 Anti-static wrist strap           1    Rp  15.000   Rp  15.000  ESD protection
+4.12 Component storage box 24 grid     1    Rp  30.000   Rp  30.000  Organization
+--------------------------------------------------------------------------------
+SUBTOTAL KATEGORI 4:                                    Rp 400.000
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+KATEGORI 5: TESTING, CALIBRATION & VALIDATION
+--------------------------------------------------------------------------------
+No  Item                              Qty  Harga Satuan  Subtotal    Keterangan
+--------------------------------------------------------------------------------
+5.1 Reference thermometer digital      1    Rp 100.000   Rp 100.000  ±0.1°C accuracy (rent/buy)
+5.2 Reference hygrometer digital       1    Rp  80.000   Rp  80.000  ±2% RH accuracy
+5.3 Lux meter portable                 1    Rp 120.000   Rp 120.000  Rental 1 minggu
+5.4 pH meter digital (tanah/nutrisi)   1    Rp 150.000   Rp 150.000  Optional untuk ekspansi
+5.5 Measuring cup graduated 1L         2    Rp  15.000   Rp  30.000  Water volume measurement
+5.6 Stopwatch digital                  1    Rp  25.000   Rp  25.000  Pump flow rate test
+5.7 Thermometer infrared non-contact   1    Rp  75.000   Rp  75.000  Surface temp monitoring
+--------------------------------------------------------------------------------
+SUBTOTAL KATEGORI 5:                                    Rp 580.000
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+KATEGORI 6: DOKUMENTASI & DISSEMINASI
+--------------------------------------------------------------------------------
+No  Item                              Qty  Harga Satuan  Subtotal    Keterangan
+--------------------------------------------------------------------------------
+6.1 Printing proposal & laporan        1    Rp  50.000   Rp  50.000  Full color, jilid
+    (100 halaman)
+6.2 Poster ilmiah A1 size full color   2    Rp  50.000   Rp 100.000  Untuk presentasi
+6.3 Banner roll-up 60x160cm            1    Rp 150.000   Rp 150.000  Exhibition display
+6.4 Video production equipment rental  1    Rp 200.000   Rp 200.000  Kamera, mic, lighting
+    (2 hari)                                                          (atau gunakan smartphone)
+6.5 Video editing software (optional)  -    Rp      0    Rp      0   DaVinci Resolve free
+6.6 Graphic design tools (Canva Pro)   1    Rp  50.000   Rp  50.000  1 bulan subscription
+6.7 Travel & accommodation (lokal)     2    Rp  75.000   Rp 150.000  Site visit, testing
+    orang-hari
+6.8 Miscellaneous (flash drive, folder) 1   Rp  50.000   Rp  50.000  Documentation materials
+--------------------------------------------------------------------------------
+SUBTOTAL KATEGORI 6:                                    Rp 750.000
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+KATEGORI 7: MATERIAL TANAMAN & OPERASIONAL (PILOT TEST)
+--------------------------------------------------------------------------------
+No  Item                              Qty  Harga Satuan  Subtotal    Keterangan
+--------------------------------------------------------------------------------
+7.1 Bibit selada / sayuran (seedlings) 200 Rp    500    Rp 100.000  Untuk 2 batch testing
+7.2 Media tanam / growing media (cocopeat) 1 Rp 50.000   Rp  50.000  50L bag
+7.3 Nutrisi hidroponik AB mix          1    Rp  80.000   Rp  80.000  5 liter concentrate
+7.4 Net pot 5cm diameter               200  Rp    500    Rp 100.000  Untuk hidroponik NFT
+7.5 Plastik UV greenhouse (cadangan)   5m   Rp  15.000   Rp  75.000  Repair material
+7.6 Pestisida organik (neem oil)       1    Rp  50.000   Rp  50.000  Preventive control
+7.7 Elektrikal energy cost (2 bulan)   2    Rp  75.000   Rp 150.000  Estimasi 50 kWh/bulan
+    bulan                                                             @ Rp 1.500/kWh
+7.8 Water consumption (2 bulan)        2    Rp  25.000   Rp  50.000  Estimasi usage
+    bulan
+--------------------------------------------------------------------------------
+SUBTOTAL KATEGORI 7:                                    Rp 655.000
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+KATEGORI 8: CONTINGENCY & MISCELLANEOUS (10% dari total)
+--------------------------------------------------------------------------------
+Cadangan untuk:
+- Komponen replacement jika ada yang rusak saat testing
+- Shipping & handling charges
+- Biaya tak terduga (cuaca, troubleshooting extended)
+- Upgrade komponen jika diperlukan (sensor industrial-grade, etc.)
+
+Perhitungan: (Kategori 1-7) x 10% = Rp 437.500 → dibulatkan Rp 450.000
+--------------------------------------------------------------------------------
+SUBTOTAL KATEGORI 8:                                    Rp 450.000
+--------------------------------------------------------------------------------
+
+
+================================================================================
+RINGKASAN TOTAL ANGGARAN
+================================================================================
+
+Kategori 1: Hardware Elektronika                        Rp   840.000
+Kategori 2: Hardware Mekanikal & Enclosure              Rp   550.000
+Kategori 3: Cloud Infrastructure (6 bulan)              Rp   600.000
+Kategori 4: Development Tools & Consumables             Rp   400.000
+Kategori 5: Testing & Validation                        Rp   580.000
+Kategori 6: Dokumentasi & Disseminasi                   Rp   750.000
+Kategori 7: Material Tanaman & Operasional              Rp   655.000
+Kategori 8: Contingency (10%)                           Rp   450.000
+--------------------------------------------------------------------------------
+TOTAL ANGGARAN PROYEK:                                  Rp 4.825.000
+================================================================================
+
+CATATAN:
+- Budget masih Rp 3.675.000 di bawah limit Rp 8.500.000 (43% utilized)
+- Margin tersebut dapat digunakan untuk:
+  * Upgrade sensor ke industrial-grade (SHT31 → SHT35, BH1750 → VEML7700)
+  * Tambahan sensor (CO2, EC/TDS meter untuk hidroponik)
+  * PCB custom fabrication untuk production-ready prototype
+  * Ekspansi sistem (solar panel + battery backup untuk off-grid capability)
+  * Tim expansion atau expert consultation fee
+
+
+================================================================================
+B. JADWAL KEGIATAN DETAIL (8 MINGGU / 56 HARI)
+================================================================================
+
+--------------------------------------------------------------------------------
+MINGGU 1: PERSIAPAN DAN PROCUREMENT
+--------------------------------------------------------------------------------
+Hari 1-2: Desain & Planning
+□ Finalisasi skematik rangkaian elektronik (Fritzing/EasyEDA)
+□ Buat BOM (Bill of Materials) detail dengan supplier links
+□ Review arsitektur software dan API design
+□ Setup GitHub repository untuk version control
+
+Hari 3-4: Procurement Hardware
+□ Order semua komponen elektronik (ESP32, sensor, relay, etc.)
+□ Order komponen mekanikal (enclosure, mounting, cables)
+□ Beli tools (soldering station, multimeter) jika belum ada
+
+Hari 5-7: Setup Development Environment
+□ Install Arduino IDE + ESP32 board package + libraries
+□ Setup VPS cloud server (Ubuntu, Nginx, firewall)
+□ Install MQTT broker (Mosquitto)
+□ Install database (InfluxDB atau MongoDB)
+□ Test local development environment
+
+Deliverables Minggu 1:
+✓ Skematik lengkap dan BOM
+✓ Semua komponen terpenuhi (procurement complete)
+✓ Development environment ready
+
+--------------------------------------------------------------------------------
+MINGGU 2: PROTOTYPING HARDWARE
+--------------------------------------------------------------------------------
+Hari 8-9: Basic Wiring & Assembly
+□ Solder header pins ke ESP32 jika diperlukan
+□ Test ESP32 dengan blink LED program
+□ Wiring sensor SHT31, BH1750 ke ESP32 (I2C bus)
+□ Wiring soil moisture sensor ke ADC pin
+
+Hari 10-11: Power System Integration
+□ Setup power supply 12V dan step-down converter 12V→5V
+□ Test voltage levels dengan multimeter
+□ Connect relay module ke ESP32 GPIO
+□ Test relay switching (manual via digitalWrite)
+
+Hari 12-13: Actuator Integration
+□ Connect water pump ke relay channel 1
+□ Connect exhaust fan ke relay channel 2
+□ Connect grow light ke relay channel 3
+□ Test each actuator individually (manual control)
+
+Hari 14: Testing & Troubleshooting
+□ Full system power-on test
+□ Check untuk short circuits atau overheating
+□ Verify all connections dengan continuity test
+□ Basic sensor reading test via Serial Monitor
+
+Deliverables Minggu 2:
+✓ Hardware prototype functional (all sensors + actuators working)
+✓ Documentation: Wiring diagram as-built
+
+--------------------------------------------------------------------------------
+MINGGU 3: FIRMWARE DEVELOPMENT (ESP32)
+--------------------------------------------------------------------------------
+Hari 15-16: Sensor Reading Module
+□ Implement SHT31 temperature/humidity reading
+□ Implement BH1750 light intensity reading
+□ Implement soil moisture ADC reading dengan calibration
+□ Error handling untuk sensor failures
+
+Hari 17-18: Actuator Control Module
+□ Implement relay control functions
+□ Implement hysteresis control logic untuk pump
+□ Implement temperature/humidity-based fan control
+□ Implement light-based grow light control
+□ Add timing constraints (min ON/OFF time)
+
+Hari 19-20: Communication Module
+□ WiFi connection management dengan auto-reconnect
+□ MQTT client implementation (connect, publish, subscribe)
+□ JSON payload creation untuk sensor data
+□ Command parsing untuk remote control (ON/OFF/AUTO)
+
+Hari 21: Integration & Testing
+□ Integrate all modules dalam main loop
+□ Test full control flow: sensor → logic → actuator → MQTT
+□ Stress test: disconnect WiFi/MQTT dan verify recovery
+□ Serial debugging dan logging
+
+Deliverables Minggu 3:
+✓ ESP32 firmware v1.0 functional
+✓ Source code di GitHub dengan documentation
+
+--------------------------------------------------------------------------------
+MINGGU 4: BACKEND & CLOUD DEVELOPMENT
+--------------------------------------------------------------------------------
+Hari 22-23: MQTT Broker & Database Setup
+□ Configure Mosquitto broker dengan authentication
+□ Test MQTT publish/subscribe dengan MQTT Explorer tool
+□ Setup InfluxDB dan buat database schema
+□ Test data writing ke InfluxDB
+
+Hari 24-25: API Server Development (Node.js)
+□ Create Express.js API server boilerplate
+□ Implement data ingestion service (MQTT subscriber → DB writer)
+□ Implement RESTful API endpoints:
+  - GET /api/devices/:id/latest
+  - GET /api/devices/:id/history
+  - POST /api/devices/:id/command
+□ Add JWT authentication middleware
+
+Hari 26-27: Integration Testing
+□ Test end-to-end data flow: ESP32 → MQTT → Backend → Database
+□ Test API endpoints dengan Postman
+□ Test command publishing: API → MQTT → ESP32 → Actuator
+□ Load testing dengan simulated high-frequency data
+
+Hari 28: Documentation & Deployment
+□ Deploy backend to VPS dengan PM2 process manager
+□ Configure Nginx reverse proxy untuk API
+□ Setup SSL certificate (Let's Encrypt)
+□ Write API documentation
+
+Deliverables Minggu 4:
+✓ Cloud backend operational dan accessible via HTTPS
+✓ End-to-end communication verified
+
+--------------------------------------------------------------------------------
+MINGGU 5: FRONTEND DASHBOARD DEVELOPMENT
+--------------------------------------------------------------------------------
+Hari 29-30: Dashboard UI Design & Setup
+□ Create React.js project boilerplate
+□ Design UI mockups (Figma atau paper sketch)
+□ Implement navigation dan routing
+□ Setup state management (Context API atau Redux)
+
+Hari 31-32: Real-Time Monitoring Page
+□ Implement current sensor value display (gauge/cards)
+□ Implement time-series charts (Chart.js atau Recharts)
+□ Add MQTT WebSocket subscription untuk real-time updates
+□ Implement auto-refresh dan connection status indicator
+
+Hari 33-34: Control Panel & Settings
+□ Implement manual control switches (ON/OFF/AUTO)
+□ Implement threshold configuration sliders
+□ Add command sending via API
+□ Implement alert rules configuration
+
+Hari 35: Testing & Responsive Design
+□ Test pada berbagai device sizes (mobile, tablet, desktop)
+□ Cross-browser testing (Chrome, Firefox, Safari)
+□ Performance optimization (lazy loading, code splitting)
+□ Deploy dashboard to hosting (Netlify/Vercel atau VPS)
+
+Deliverables Minggu 5:
+✓ Web dashboard accessible dan fully functional
+✓ Responsive design untuk mobile monitoring
+
+--------------------------------------------------------------------------------
+MINGGU 6: CALIBRATION & VALIDATION
+--------------------------------------------------------------------------------
+Hari 36-37: Sensor Calibration
+□ Soil moisture sensor: Kalibrasi di air (100%) dan udara (0%)
+  + intermediate points dengan gravimetric method
+□ SHT31: Verifikasi accuracy vs reference thermometer/hygrometer
+□ BH1750: Verifikasi vs lux meter reference
+□ Update calibration constants di firmware
+
+Hari 38-39: Control Algorithm Testing
+□ Test pump control dengan artificial soil drying/wetting
+□ Test fan control dengan heat source simulation
+□ Verify hysteresis behavior (no rapid cycling)
+□ Fine-tune threshold values untuk optimal response
+
+Hari 40-41: System Performance Testing
+□ 48-hour continuous operation test
+□ Monitor system uptime dan reliability
+□ Measure response time (sensor change → actuator action)
+□ Test failure recovery (power loss, network disconnect)
+
+Hari 42: Data Analysis & Optimization
+□ Analyze collected data untuk parameter stability
+□ Identify any sensor drift atau anomalies
+□ Optimize control parameters based on empirical data
+□ Document calibration procedures untuk replication
+
+Deliverables Minggu 6:
+✓ System calibrated dan validated
+✓ Performance benchmark report
+✓ Calibration procedure documentation
+
+--------------------------------------------------------------------------------
+MINGGU 7: FIELD DEPLOYMENT & PILOT TESTING
+--------------------------------------------------------------------------------
+Hari 43-44: Installation di Greenhouse
+□ Mount junction box dan enclosure di greenhouse
+□ Install sensors pada lokasi representative
+  (SHT31: height 1.5m dari ground, shaded)
+  (Soil moisture: depth 5-7cm di growing bed)
+  (BH1750: unobstructed untuk skylight measurement)
+□ Install actuators:
+  (Water pump: di reservoir tank)
+  (Exhaust fan: di greenhouse top untuk hot air extraction)
+□ Wire management dan waterproofing
+□ System power-on dan connection test
+
+Hari 45-46: Initial Operation & Monitoring
+□ Configure thresholds sesuai target crop (selada):
+  - Temp target: 22-26°C
+  - RH target: 70-80%
+  - Soil moisture target: 70-75%
+□ Enable AUTO mode untuk semua actuators
+□ Monitor via dashboard 24/7
+□ On-site observation untuk verify actuator actions
+
+Hari 47-48: Data Collection & Bug Fixing
+□ Continuous data logging
+□ Identify any software bugs atau unexpected behavior
+□ Fix issues dan re-deploy firmware/backend jika diperlukan
+□ Adjust control parameters based on greenhouse characteristics
+
+Hari 49: Baseline & Manual Comparison
+□ (Opsional) Compare dengan greenhouse manual operation
+□ Measure water consumption automated vs manual
+□ Analyze parameter stability (std deviation)
+□ Calculate energy usage
+
+Deliverables Minggu 7:
+✓ System deployed di greenhouse dan operational
+✓ Minimum 4 hari continuous data collected
+✓ Bug fixes dan optimization applied
+
+--------------------------------------------------------------------------------
+MINGGU 8: EVALUATION, DOCUMENTATION & PRESENTATION
+--------------------------------------------------------------------------------
+Hari 50-51: Data Analysis & Evaluation
+□ Export historical data dari database (CSV)
+□ Analisis parameter trends (temperature, humidity, soil moisture)
+□ Calculate metrics:
+  - Parameter stability (standard deviation vs target)
+  - Water usage efficiency (liter per hari)
+  - Actuator duty cycle (ON time percentage)
+  - System uptime percentage
+□ Generate graphs dan comparison charts
+
+Hari 52-53: Final Report Writing
+□ Compile semua dokumentasi teknis
+□ Write executive summary dan conclusion
+□ Add photographs dan system screenshots
+□ Create appendix (code snippets, datasheets, etc.)
+□ Proofread dan format sesuai template lomba
+
+Hari 54-55: Video Production & Presentation Material
+□ Shoot video demonstrasi sistem (greenhouse on-site)
+□ Record screen capture untuk dashboard demo
+□ Video editing dan narration
+□ Create PowerPoint presentation slides
+□ Design poster untuk exhibition
+
+Hari 56: Final Submission
+□ Print final report dan supporting documents
+□ Upload video ke platform (YouTube unlisted)
+□ Package all deliverables (USB drive backup)
+□ Submit to competition organizer
+□ Backup all code dan data ke external storage
+
+Deliverables Minggu 8:
+✓ Final report lengkap (PDF + printed)
+✓ Video demonstrasi (5-10 menit)
+✓ Presentation slides
+✓ Poster ilmiah
+✓ All source code di GitHub (public atau private dengan access)
+✓ Dataset untuk reference
+
+
+================================================================================
+C. GANTT CHART (VISUAL TIMELINE)
+================================================================================
+
+Minggu →    1    2    3    4    5    6    7    8
+         ├────┼────┼────┼────┼────┼────┼────┼────┤
+Kategori │
+─────────┤
+Design   │████▓▓░░│    │    │    │    │    │    │
+Procure  │░░░░████│    │    │    │    │    │    │
+Hardware │    │████████│    │    │    │    │    │
+Firmware │    │    │████████│    │    │    │    │
+Backend  │    │    │    │████████│    │    │    │
+Frontend │    │    │    │░░░░████████│    │    │
+Calibrat │    │    │    │    │    │████████│    │
+Deploy   │    │    │    │    │    │    │████████│
+Document │    │    │    │    │    │    │░░░░████│
+
+Legend:
+████ = Primary focus / intensive work
+▓▓▓▓ = Secondary activity / preparation
+░░░░ = Ongoing / maintenance / support
+
+
+================================================================================
+D. MILESTONE & CHECKPOINTS
+================================================================================
+
+Checkpoint 1 (End of Week 2): Hardware Prototype Review
+□ All components received dan functional
+□ Prototype dapat membaca sensor dan mengontrol actuator
+□ Basic testing passed
+Decision Point: Proceed to software development atau address hardware issues
+
+Checkpoint 2 (End of Week 4): Software Integration Review
+□ ESP32 firmware complete dan stable
+□ Cloud backend operational
+□ End-to-end communication verified
+Decision Point: Proceed to dashboard development atau fix integration bugs
+
+Checkpoint 3 (End of Week 6): System Validation Review
+□ Sensors calibrated
+□ Control logic validated
+□ System reliability confirmed (48h uptime)
+Decision Point: Ready for field deployment atau need more testing
+
+Final Checkpoint (End of Week 8): Submission Readiness
+□ All deliverables complete
+□ Documentation thorough dan professional
+□ Video dan presentation materials ready
+Decision Point: Submit atau request deadline extension (if allowed)
+
+
+================================================================================
+E. RISK MITIGATION PLAN
+================================================================================
+
+Risk 1: Component procurement delay (shipping, stock issues)
+Mitigation:
+- Order components dari multiple suppliers
+- Identify alternative compatible components
+- Buffer time built into schedule (Week 1 procurement + Week 2 buffer)
+Contingency: Use Arduino Uno + Ethernet shield sebagai fallback (less optimal)
+
+Risk 2: Sensor inaccuracy atau failure
+Mitigation:
+- Buy spare sensors (within contingency budget)
+- Implement sensor validation checks di firmware
+- Cross-verify dengan reference instruments
+Contingency: Switch to alternative sensor (DHT22 instead of SHT31, LDR instead BH1750)
+
+Risk 3: Cloud infrastructure issues (VPS downtime, network)
+Mitigation:
+- Choose reliable VPS provider dengan SLA guarantee
+- Implement local data logging ke SD card sebagai backup
+- Setup monitoring alerts (UptimeRobot)
+Contingency: Switch to alternative MQTT broker (CloudMQTT, HiveMQ free tier)
+
+Risk 4: Greenhouse access restrictions atau unfavorable weather
+Mitigation:
+- Secure greenhouse location agreement early (Week 1)
+- Plan indoor testing environment sebagai alternative
+- Weather monitoring untuk schedule outdoor work
+Contingency: Use controlled indoor environment (small grow tent) untuk initial testing
+
+Risk 5: Software bugs atau integration issues
+Mitigation:
+- Incremental development dengan frequent testing
+- Version control dengan Git untuk easy rollback
+- Allocate buffer time di schedule (Week 7 untuk bug fixing)
+Contingency: Reduce feature scope to MVP (remove supplemental lighting, keep core monitoring/irrigation)
+
+
+================================================================================
+F. RESOURCE ALLOCATION
+================================================================================
+
+Untuk Tim 3 Orang:
+
+Anggota 1 (Hardware & Firmware Lead):
+- Responsible: Schematic design, hardware assembly, ESP32 firmware
+- Primary workload: Week 1-3, support pada Week 6-7
+
+Anggota 2 (Backend & Infrastructure Lead):
+- Responsible: Cloud setup, MQTT broker, backend API, database
+- Primary workload: Week 4, support pada Week 5 dan 7
+
+Anggota 3 (Frontend & Documentation Lead):
+- Responsible: Dashboard UI/UX, data visualization, report writing
+- Primary workload: Week 5, Week 8, support throughout
+
+Collaborative Tasks:
+- System integration testing (Week 4, Week 6)
+- Field deployment (Week 7)
+- Video production dan presentation prep (Week 8)
+
+
+================================================================================
+END OF RAB DAN JADWAL
+================================================================================

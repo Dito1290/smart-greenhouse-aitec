@@ -1,0 +1,505 @@
+================================================================================
+DOKUMEN PROPOSAL SMART GREENHOUSE IoT
+AITeC (Agricultural Innovation Technology Competition)
+Kategori: Smart and Precision Farming
+================================================================================
+
+--------------------------------------------------------------------------------
+BAGIAN 1: OPSI JUDUL PROPOSAL
+--------------------------------------------------------------------------------
+
+OPSI A (Fokus Teknologi):
+"Sistem Monitoring dan Kontrol Otomatis Greenhouse Berbasis ESP32 dengan 
+Integrasi IoT untuk Optimasi Parameter Mikroklimat Tanaman Hortikultura"
+
+OPSI B (Fokus Dampak):
+"Smart Greenhouse: Solusi Precision Agriculture untuk Peningkatan Produktivitas 
+dan Efisiensi Penggunaan Sumber Daya pada Budidaya Tanaman Sayuran"
+
+OPSI C (Fokus Inovasi) - REKOMENDASI:
+"Greenhouse Cerdas Terintegrasi IoT: Implementasi Sistem Monitoring Real-Time 
+dan Kontrol Adaptif Berbasis ESP32 untuk Pertanian Presisi"
+
+Rekomendasi: OPSI C karena mencakup aspek teknologi (ESP32, IoT), metodologi 
+(monitoring real-time, kontrol adaptif), dan target aplikasi (pertanian presisi) 
+secara seimbang.
+
+
+--------------------------------------------------------------------------------
+BAGIAN 2: RINGKASAN EKSEKUTIF
+--------------------------------------------------------------------------------
+
+LATAR BELAKANG MASALAH:
+Pertanian greenhouse konvensional menghadapi tantangan dalam pemantauan dan 
+pengendalian parameter lingkungan (suhu, kelembapan udara, kelembapan tanah, 
+intensitas cahaya) yang optimal untuk pertumbuhan tanaman. Sistem manual 
+memerlukan tenaga kerja intensif, rentan terhadap human error, dan tidak mampu 
+merespons perubahan kondisi lingkungan secara cepat. Hal ini menyebabkan 
+pemborosan air irigasi hingga 40%, konsumsi energi yang tidak efisien, dan 
+fluktuasi produktivitas hingga 30% akibat kondisi mikroklimat yang tidak stabil.
+
+SOLUSI TEKNOLOGI:
+Proyek ini mengembangkan sistem Smart Greenhouse terintegrasi berbasis 
+mikrokontroler ESP32 dengan kemampuan:
+1. Monitoring real-time parameter lingkungan (suhu, kelembapan udara/tanah, 
+   intensitas cahaya) melalui jaringan sensor presisi tinggi
+2. Kontrol otomatis aktuator (pompa irigasi, exhaust fan, sistem pencahayaan) 
+   berdasarkan threshold adaptif sesuai kebutuhan tanaman
+3. Komunikasi data ke cloud server menggunakan protokol MQTT dengan dashboard 
+   monitoring berbasis web/mobile yang dapat diakses dari mana saja
+4. Sistem logging data historis untuk analisis tren dan pengambilan keputusan
+5. Alert system untuk notifikasi kondisi abnormal
+
+KEUNGGULAN & NOVELTY:
+- Integrasi multi-sensor dengan single board ESP32 yang hemat energi
+- Algoritma kontrol adaptif berbasis threshold dinamis per fase pertumbuhan
+- Arsitektur modular dan scalable untuk ekspansi sensor tambahan
+- Biaya implementasi terjangkau (<Rp 2.500.000 per unit greenhouse 50m²)
+- Open-source dan replicable untuk transfer teknologi ke petani
+
+DAMPAK YANG DIHARAPKAN:
+- Peningkatan efisiensi penggunaan air hingga 45% melalui irigasi presisi
+- Reduksi tenaga kerja pemantauan manual hingga 70%
+- Stabilisasi parameter mikroklimat dengan standar deviasi <5% dari target
+- Peningkatan produktivitas tanaman 20-35% melalui kondisi optimal konsisten
+- ROI (Return on Investment) tercapai dalam 8-12 bulan operasional
+
+TARGET KOMODITAS:
+Fase pilot untuk tanaman sayuran daun (selada, kangkung, pakcoy) dengan 
+potensi ekspansi ke tomat, paprika, dan tanaman hortikultura bernilai tinggi.
+
+
+================================================================================
+BAB 1: PENDAHULUAN
+================================================================================
+
+1.1 LATAR BELAKANG
+
+Sektor pertanian Indonesia menghadapi tantangan kompleks di era modernisasi: 
+kebutuhan peningkatan produktivitas, efisiensi sumber daya, dan adaptasi 
+terhadap perubahan iklim. Greenhouse (rumah kaca) merupakan solusi controlled 
+environment agriculture yang memungkinkan produksi tanaman berkualitas tinggi 
+sepanjang tahun. Namun, pengelolaan greenhouse konvensional menghadapi kendala:
+
+A. Pemantauan Manual yang Tidak Efektif
+   - Monitoring parameter lingkungan dilakukan 2-3 kali per hari secara manual
+   - Tidak ada data kontinyu untuk mendeteksi fluktuasi mikroklimat
+   - Ketergantungan pada penilaian subjektif petani
+
+B. Kontrol yang Tidak Presisi
+   - Irigasi berbasis jadwal tetap tanpa mempertimbangkan kondisi aktual tanah
+   - Ventilasi manual yang lambat merespons perubahan suhu/kelembapan
+   - Overapplication air dan energi menyebabkan biaya operasional tinggi
+
+C. Keterbatasan Akses Informasi Real-Time
+   - Petani tidak dapat memantau kondisi greenhouse dari jarak jauh
+   - Tidak ada sistem peringatan dini untuk kondisi abnormal (overheating, 
+     kekeringan, kelembapan ekstrem)
+   - Data historis tidak tercatat untuk pembelajaran dan optimasi
+
+D. Hambatan Adopsi Teknologi
+   - Sistem otomasi komersial terlalu mahal (>Rp 50 juta per greenhouse)
+   - Kompleksitas instalasi dan maintenance memerlukan expertise tinggi
+   - Ketergantungan pada vendor proprietary untuk support
+
+Berdasarkan studi FAO (2024), implementasi precision agriculture pada greenhouse 
+dapat meningkatkan water use efficiency hingga 40-60% dan produktivitas 25-45%. 
+Namun, adopsi di Indonesia masih <5% karena kendala biaya dan aksesibilitas 
+teknologi.
+
+
+1.2 RUMUSAN MASALAH
+
+Bagaimana merancang dan mengimplementasikan sistem Smart Greenhouse berbasis 
+IoT yang:
+1. Mampu memonitor parameter lingkungan kritis secara real-time dan kontinyu
+2. Mengotomasi kontrol aktuator berdasarkan kebutuhan aktual tanaman
+3. Menyediakan interface user-friendly untuk monitoring dan manajemen jarak jauh
+4. Terjangkau secara ekonomis untuk skala usaha kecil-menengah (UMKM pertanian)
+5. Mudah direplikasi dan di-maintain oleh petani dengan pelatihan minimal
+
+
+1.3 TUJUAN PENELITIAN
+
+Tujuan Umum:
+Mengembangkan sistem Smart Greenhouse terintegrasi berbasis ESP32 dan IoT untuk 
+meningkatkan efisiensi sumber daya dan produktivitas tanaman hortikultura.
+
+Tujuan Khusus:
+1. Merancang arsitektur hardware sistem monitoring multi-parameter (suhu, 
+   kelembapan udara, kelembapan tanah, intensitas cahaya) dengan akurasi tinggi
+2. Mengembangkan firmware ESP32 untuk akuisisi data sensor, algoritma kontrol 
+   otomatis, dan komunikasi IoT
+3. Membangun platform cloud-based untuk data logging, visualisasi, dan remote 
+   control melalui dashboard web/mobile
+4. Melakukan kalibrasi dan validasi sistem terhadap standar referensi
+5. Menguji efektivitas sistem pada kondisi operasional riil greenhouse dengan 
+   tanaman sayuran daun sebagai pilot project
+
+
+1.4 MANFAAT PENELITIAN
+
+Manfaat Praktis:
+- Petani: Reduksi beban kerja, peningkatan produktivitas, penghematan biaya 
+  operasional
+- UMKM Pertanian: Akses teknologi precision farming dengan investasi terjangkau
+- Lingkungan: Konservasi air dan energi melalui penggunaan sumber daya presisi
+
+Manfaat Akademis:
+- Kontribusi pada pengembangan applied IoT untuk sektor pertanian
+- Model implementasi sistem embedded untuk controlled environment agriculture
+- Dataset parameter mikroklimat greenhouse untuk penelitian lanjutan
+
+Manfaat Sosial-Ekonomi:
+- Transfer teknologi untuk penguatan daya saing petani Indonesia
+- Penciptaan ekosistem smart farming berbasis open-source
+- Dukungan terhadap ketahanan pangan nasional melalui optimasi produksi
+
+
+================================================================================
+BAB 2: TINJAUAN PUSTAKA DAN KEBARUAN SISTEM
+================================================================================
+
+2.1 LANDASAN TEORI
+
+A. Parameter Lingkungan Optimal Tanaman Hortikultura
+
+Berdasarkan literatur (Jones, 2014; Nemali & van Iersel, 2006), parameter 
+kritis untuk pertumbuhan tanaman sayuran daun di greenhouse:
+
+1. Suhu Udara
+   - Range optimal: 20-28°C (fase vegetatif)
+   - Suhu >32°C menyebabkan heat stress dan penurunan fotosintesis
+   - Suhu <15°C menghambat pertumbuhan dan memperpanjang siklus panen
+
+2. Kelembapan Udara (Relative Humidity)
+   - Range optimal: 60-80%
+   - RH >85% meningkatkan risiko penyakit jamur (powdery mildew, downy mildew)
+   - RH <50% menyebabkan excessive transpiration dan stress air
+
+3. Kelembapan Tanah (Soil Moisture)
+   - Range optimal: 60-80% kapasitas lapang (field capacity)
+   - Deficit air >20% menyebabkan wilting dan penurunan turgor
+   - Saturasi >90% menghambat aerasi akar dan meningkatkan risiko root rot
+
+4. Intensitas Cahaya
+   - Minimum untuk fotosintesis: 200 µmol/m²/s (≈10,000 lux)
+   - Optimal untuk sayuran daun: 300-600 µmol/m²/s (15,000-30,000 lux)
+   - DLI (Daily Light Integral) target: 12-17 mol/m²/day
+
+B. Teknologi IoT untuk Precision Agriculture
+
+Internet of Things (IoT) mengintegrasikan sensing, computation, dan communication 
+untuk sistem cyber-physical pertanian (Wolfert et al., 2017). Komponen utama:
+
+1. Sensor Layer: Akuisisi data lingkungan menggunakan transduser elektronik
+2. Edge Computing: Preprocessing dan kontrol lokal pada mikrokontroler
+3. Network Layer: Transmisi data via WiFi/LoRa/NB-IoT ke gateway/cloud
+4. Cloud Platform: Storage, analytics, dan presentation layer
+5. Application Layer: Dashboard, alert, dan decision support system
+
+C. Mikrokontroler ESP32 untuk Aplikasi Greenhouse
+
+ESP32 (Espressif Systems) merupakan SoC (System-on-Chip) dengan keunggulan:
+- Dual-core Xtensa LX6 @ 240MHz untuk multitasking
+- WiFi 802.11 b/g/n dan Bluetooth 4.2 terintegrasi
+- 18 channel 12-bit ADC untuk interfacing sensor analog
+- GPIO sufficient untuk multiple sensor/actuator
+- Deep sleep mode (<100µA) untuk aplikasi battery-powered
+- Biaya rendah (~$5 per unit) dan ekosistem open-source mature
+
+D. Protokol Komunikasi IoT: MQTT
+
+MQTT (Message Queuing Telemetry Transport) adalah protokol publish-subscribe 
+yang ideal untuk IoT karena:
+- Lightweight (minimal overhead, efisien untuk bandwidth terbatas)
+- Quality of Service (QoS) levels untuk reliability
+- Persistent sessions dan retained messages
+- Support untuk TLS/SSL encryption
+- Broker open-source tersedia (Mosquitto, HiveMQ)
+
+
+2.2 STATE-OF-THE-ART SISTEM GREENHOUSE AUTOMATION
+
+Review sistem existing:
+
+A. Komersial High-End (Priva, Ridder, Hoogendoorn)
+   - Kelebihan: Fully integrated, AI-based climate control, proven reliability
+   - Kekurangan: Biaya tinggi (>$10,000), proprietary, maintenance cost
+   - Gap: Tidak accessible untuk smallholder farmers
+
+B. DIY/Open-Source (FarmBot, Open Agriculture Initiative)
+   - Kelebihan: Terjangkau, customizable, community-driven
+   - Kekurangan: Limited support, complex assembly, reliability varies
+   - Gap: Fokus pada hobbyist, kurang robust untuk produksi komersial
+
+C. Penelitian Akademis (IEEE, ScienceDirect papers)
+   - Berbagai studi proof-of-concept menggunakan Arduino/Raspberry Pi
+   - Fokus pada aspek teknis tertentu (sensor accuracy, control algorithm)
+   - Gap: Jarang mencapai tahap field deployment dan economic viability analysis
+
+
+2.3 KEBARUAN DAN KEUNGGULAN SISTEM YANG DIUSULKAN
+
+Sistem Smart Greenhouse yang dikembangkan memiliki novelty:
+
+A. Arsitektur Terintegrasi Hemat Biaya
+   - Single ESP32 board menggantikan multiple controller/gateway
+   - PCB custom untuk reliable connection dan industrial-grade durability
+   - Total BOM (Bill of Materials) <Rp 2.000.000 untuk sistem lengkap
+
+B. Algoritma Kontrol Adaptif
+   - Threshold dinamis berdasarkan fase pertumbuhan (seedling, vegetative, harvest)
+   - Time-based rules untuk menghindari actuator cycling
+   - Hysteresis control untuk stabilitas sistem
+
+C. Cloud Platform Terintegrasi
+   - Dashboard real-time dengan visualisasi time-series data
+   - Historical data analytics untuk yield prediction
+   - Mobile app untuk remote monitoring dan control
+   - Export data untuk further analysis (CSV, API)
+
+D. Pendekatan Participatory Design
+   - Co-design dengan petani untuk memastikan usability
+   - Training dan dokumentasi dalam Bahasa Indonesia
+   - Local support network untuk sustainability
+
+E. Economic Viability
+   - Analisis ROI berdasarkan water savings dan yield increase
+   - Scalable deployment model (per-greenhouse unit)
+   - Open-source untuk replikasi dan customization
+
+
+================================================================================
+BAB 3: METODE PELAKSANAAN
+================================================================================
+
+3.1 DESAIN SISTEM
+
+A. Arsitektur Hardware (lihat file hardware/architecture.txt)
+
+Komponen Utama:
+1. Mikrokontroler: ESP32 DevKit v1 (30-pin)
+2. Sensor:
+   - DHT22 / SHT31: Suhu dan kelembapan udara
+   - Soil Moisture Sensor (Capacitive): Kelembapan tanah
+   - BH1750 / LDR + resistor: Intensitas cahaya
+3. Aktuator:
+   - Relay 4-channel 5V (untuk pompa, fan, lampu, spare)
+   - Water pump DC 12V 3-5L/min
+   - Exhaust fan 12V 0.15A
+   - LED grow light 12V (optional)
+4. Power Supply:
+   - Adaptor 12V 3A untuk aktuator
+   - Step-down converter 12V→5V 3A untuk ESP32 dan sensor
+5. Enclosure:
+   - IP55 junction box untuk ESP32 dan relay
+   - Weatherproof sensor housing
+
+B. Arsitektur Software
+
+1. Firmware ESP32 (Arduino framework):
+   - Sensor reading dengan error handling
+   - Control logic berbasis threshold dan timer
+   - MQTT client untuk publish data dan subscribe commands
+   - OTA (Over-The-Air) update capability
+   - Watchdog timer untuk system resilience
+
+2. Cloud Backend:
+   - MQTT Broker: Mosquitto di VPS/cloud server
+   - Time-series database: InfluxDB untuk sensor data
+   - Application server: Node.js + Express untuk API
+   - Authentication: JWT-based user management
+
+3. Frontend Dashboard:
+   - Web app: React.js dengan Chart.js untuk visualization
+   - Responsive design untuk mobile access
+   - Real-time update via WebSocket/MQTT over WebSocket
+
+
+3.2 TAHAPAN PELAKSANAAN
+
+MINGGU 1-2: PERSIAPAN DAN PROCUREMENT
+□ Hari 1-3: Finalisasi desain skematik dan BOM
+□ Hari 4-7: Procurement komponen elektronik dan mechanical parts
+□ Hari 8-10: Setup development environment (Arduino IDE, libraries, cloud server)
+□ Hari 11-14: Assembly hardware prototype dan basic wiring test
+
+MINGGU 3-4: DEVELOPMENT SOFTWARE
+□ Hari 15-18: Development firmware ESP32 (sensor reading, actuator control)
+□ Hari 19-22: Implementasi MQTT communication dan data logging
+□ Hari 23-26: Development cloud backend dan database setup
+□ Hari 27-28: Integration testing (hardware + software)
+
+MINGGU 5-6: KALIBRASI DAN VALIDASI
+□ Hari 29-32: Kalibrasi sensor terhadap reference instruments
+□ Hari 33-35: Testing control algorithm dengan simulated conditions
+□ Hari 36-38: Fine-tuning threshold dan timing parameters
+□ Hari 39-42: Development dashboard frontend dan user interface
+
+MINGGU 7-8: DEPLOYMENT DAN EVALUASI
+□ Hari 43-45: Instalasi sistem di greenhouse pilot project
+□ Hari 46-49: Monitoring operational performance dan bug fixing
+□ Hari 50-53: Data collection dan preliminary analysis
+□ Hari 54-56: Dokumentasi, laporan, dan video demonstrasi
+
+(Catatan: Total durasi 8 minggu, dapat disesuaikan menjadi 6 minggu untuk 
+kompetisi dengan fokus pada MVP - Minimum Viable Product)
+
+
+3.3 METODE PENGUJIAN
+
+A. Pengujian Hardware
+1. Continuity test untuk semua koneksi kabel
+2. Voltage level verification pada power rail (3.3V, 5V, 12V)
+3. Sensor functionality test dengan known reference conditions
+4. Actuator load test untuk durability dan thermal performance
+
+B. Pengujian Software
+1. Unit testing untuk fungsi sensor reading dan control logic
+2. Integration testing untuk MQTT communication flow
+3. Stress testing untuk system uptime dan recovery dari disconnect
+4. User acceptance testing dengan end-user (petani)
+
+C. Pengujian Sistem Terintegrasi
+1. Closed-loop control test: Verifikasi bahwa system merespons perubahan 
+   environment dan mengaktifkan actuator sesuai threshold
+2. Data accuracy test: Perbandingan sensor reading dengan instrument reference
+3. Latency test: Measuring response time dari sensor trigger hingga actuator action
+4. Long-term reliability test: Continuous operation 7x24 jam untuk monitoring 
+   failure rate
+
+D. Evaluasi Efektivitas
+1. Baseline measurement: Data kondisi greenhouse manual selama 1 minggu
+2. Automated operation: Data dengan Smart Greenhouse selama 2-3 minggu
+3. Metrics comparison:
+   - Water consumption (liter/hari)
+   - Energy consumption (kWh/hari)
+   - Parameter stability (standard deviation suhu, RH, soil moisture)
+   - Labor hours untuk monitoring/maintenance
+4. Economic analysis: Payback period calculation
+
+
+3.4 LOKASI DAN SUBJEK
+
+Lokasi Penelitian:
+- Greenhouse pilot project di [Nama Lokasi, misal: Kebun Percobaan Universitas 
+  atau Greenhouse UMKM mitra]
+- Dimensi: 6m x 8m x 3m (48 m² growing area)
+- Struktur: Greenhouse tipe tunnel dengan covering plastic UV-resistant
+
+Tanaman Pilot:
+- Komoditas: Selada hijau (Lactuca sativa var. crispa)
+- Metode budidaya: Hidroponik sistem NFT (Nutrient Film Technique) atau soil-based
+- Target: 500-800 tanaman per siklus, harvest cycle 35-40 hari
+- Justifikasi: Selada sensitive terhadap environmental stress, high-value crop, 
+  rapid growth cycle untuk evaluasi cepat
+
+
+3.5 INSTRUMEN DAN BAHAN
+
+A. Peralatan Utama
+- Soldering station dan hand tools untuk electronics assembly
+- Multimeter digital untuk electrical testing
+- Reference thermometer dan hygrometer untuk sensor calibration
+- Laptop/PC untuk programming dan monitoring
+
+B. Bahan Habis Pakai
+- Kabel AWG 22-18 untuk wiring
+- Cable ties, heat shrink tube, terminal connectors
+- Sealant dan waterproofing materials
+- PCB prototype board atau custom PCB
+
+C. Software Tools
+- Arduino IDE + ESP32 board package
+- Visual Studio Code untuk backend development
+- Git untuk version control
+- Postman untuk API testing
+
+
+================================================================================
+BAB 4: RENCANA ANGGARAN BIAYA (RAB) DAN JADWAL
+================================================================================
+
+4.1 RENCANA ANGGARAN BIAYA
+
+Lihat detail di file: docs/rab-dan-jadwal.txt
+
+RINGKASAN ANGGARAN:
+
+A. HARDWARE ELECTRONICS                        Rp 1.850.000
+   - ESP32 DevKit, sensor, relay, power supply
+
+B. HARDWARE MECHANICAL & ENCLOSURE             Rp   650.000
+   - Pump, fan, enclosure, mounting materials
+
+C. CLOUD INFRASTRUCTURE (6 bulan)              Rp   900.000
+   - VPS server, domain, SSL certificate
+
+D. DEVELOPMENT TOOLS & CONSUMABLES             Rp   400.000
+   - Soldering supplies, cables, PCB
+
+E. TESTING & VALIDATION                        Rp   300.000
+   - Reference instruments rental, calibration
+
+F. DOCUMENTATION & DISSEMINATION               Rp   200.000
+   - Printing, video production, travel
+
+G. CONTINGENCY (10%)                           Rp   430.000
+
+---------------------------------------------------------------
+TOTAL ANGGARAN PROYEK:                         Rp 4.730.000
+---------------------------------------------------------------
+
+Catatan: Anggaran masih di bawah batas maksimum Rp 8.500.000, memberikan 
+margin untuk:
+- Upgrade komponen (misal: sensor industrial-grade)
+- Ekspansi fitur (misal: camera untuk plant monitoring)
+- Biaya tak terduga (shipping, custom parts, trial-error components)
+
+
+4.2 JADWAL KEGIATAN
+
+Durasi Total: 8 Minggu (56 hari)
+Dapat dikompresi menjadi 6 minggu untuk tight timeline kompetisi
+
+Lihat Gantt chart detail di file: docs/rab-dan-jadwal.txt
+
+MILESTONE UTAMA:
+□ M1 (Akhir Minggu 2): Hardware prototype functional
+□ M2 (Akhir Minggu 4): Software integration complete
+□ M3 (Akhir Minggu 6): System calibrated dan ready for deployment
+□ M4 (Akhir Minggu 8): Evaluation complete dan final report
+
+DELIVERABLES:
+1. Hardware prototype Smart Greenhouse (1 unit)
+2. Source code (firmware + backend + frontend) di GitHub repository
+3. User manual dan installation guide (Bahasa Indonesia)
+4. Technical report dan scientific paper draft
+5. Video demonstrasi sistem (5-10 menit)
+6. Dataset parameter lingkungan greenhouse (minimum 2 minggu continuous data)
+
+
+================================================================================
+PENUTUP
+================================================================================
+
+Sistem Smart Greenhouse berbasis ESP32 yang diusulkan menawarkan solusi 
+praktis, terjangkau, dan scalable untuk mengadopsi precision agriculture di 
+Indonesia. Dengan memanfaatkan teknologi IoT open-source, sistem ini dapat 
+menjadi model transfer teknologi yang sustainable dan memberikan dampak nyata 
+pada peningkatan produktivitas dan efisiensi sumber daya di sektor pertanian.
+
+Keberhasilan proyek ini akan diukur dari:
+1. Technical performance: Akurasi monitoring, reliability kontrol otomatis
+2. Economic viability: ROI positif dalam 12 bulan
+3. User acceptance: Adopsi dan kepuasan petani pengguna
+4. Replicability: Kemudahan replikasi oleh pihak lain
+
+Proposal ini disusun sebagai panduan implementasi yang komprehensif, dari 
+tahap design hingga evaluation, dengan anggaran dan timeline yang realistis 
+untuk eksekusi proyek dalam kompetisi AITeC.
+
+================================================================================
+END OF PROPOSAL DRAFT
+================================================================================
