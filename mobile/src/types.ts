@@ -90,6 +90,12 @@ export interface PlantProfile {
 
 export interface ChatResponse {
   reply: string;
+  /** Model that produced this reply (may be the server's fallback model). */
   model: string;
-  context: { attached: boolean; dataState: Freshness; readingAt: number | null; recentCount: number };
+  /** Reply hit the output limit and may be cut off. */
+  truncated?: boolean;
+  context: { attached: boolean; dataState: Freshness; readingAt: number | null; recentCount: number; historyUsed?: number };
 }
+
+/** Assistant failures that need the server admin, not a retry. */
+export const ASSISTANT_CONFIG_ERRORS = ['not_configured', 'auth', 'model_config', 'quota_exhausted', 'bad_request'];

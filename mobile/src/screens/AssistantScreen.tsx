@@ -24,13 +24,14 @@ import {
   View,
 } from 'react-native';
 import { ApiError, apiRequest } from '../api';
+import { Markdown } from '../components/Markdown';
 import { Banner } from '../components/ui';
 import { formatAge, formatClock } from '../format';
 import { useGreenhouse } from '../state/greenhouse';
 import { useSettings } from '../state/settings';
 import { colors, radius, space, toneColors } from '../theme';
-import type { ChatResponse, Freshness } from '../types';
-import { chunkForSpeech, cleanForDisplay, cleanForSpeech } from '../voice';
+import { ASSISTANT_CONFIG_ERRORS, type ChatResponse, type Freshness } from '../types';
+import { chunkForSpeech, cleanForSpeech } from '../voice';
 
 const RECORDING: RecordingOptions = {
   ...RecordingPresets.HIGH_QUALITY,
@@ -56,6 +57,10 @@ interface Message {
   source?: 'voice' | 'text';
   context?: ChatResponse['context'];
   error?: string;
+  /** Error needs the server admin (bad key, model, quota); retrying now won't help. */
+  errorNeedsAdmin?: boolean;
+  model?: string;
+  truncated?: boolean;
 }
 
 type Phase = 'idle' | 'recording' | 'transcribing' | 'thinking';
@@ -145,12 +150,13 @@ export function AssistantScreen({ active, onOpenSettings }: { active: boolean; o
           body: { message: text, history, profile: settings.profile },
           timeoutMs: 60000,
         });
-        const reply: Message = { id: newId(), role: 'model', text: res.reply };
+        const reply: Message = { id: newId(), role: 'model', text: res.reply, model: res.model, truncated: res.truncated };
         setMessages((prev) => [...prev.map((m) => (m.id === userMsg.id ? { ...m, context: res.context } : m)), reply]);
         if (settings.autoSpeak && !spokenIds.current.has(reply.id)) speak(reply);
       } catch (err) {
         const e = err as ApiError;
-        setMessages((prev) => prev.map((m) => (m.id === userMsg.id ? { ...m, error: e.message } : m)));
+        const needsAdmin = e.retryable === false && ASSISTANT_CONFIG_ERRORS.includes(e.code);
+        setMessages((prev) => prev.map((m) => (m.id === userMsg.id ? { ...m, error: e.message, errorNeedsAdmin: needsAdmin } : m)));
         // Preserve the question so the user can resend or edit it.
         setInput((cur) => cur || text);
       } finally {
@@ -274,6 +280,7 @@ export function AssistantScreen({ active, onOpenSettings }: { active: boolean; o
           {item.error && (
             <View style={s.errorBox}>
               <Text style={s.errorText}>{item.error}</Text>
+              {item.errorNeedsAdmin && <Text style={s.errorHint}>Masalah konfigurasi server; mencoba lagi sekarang kemungkinan tidak membantu.</Text>}
               <Pressable onPress={() => retry(item)} style={s.retry} accessibilityRole="button" disabled={busy}>
                 <Ionicons name="refresh" size={14} color={colors.danger} />
                 <Text style={s.retryText}>Coba lagi</Text>
@@ -286,11 +293,10 @@ export function AssistantScreen({ active, onOpenSettings }: { active: boolean; o
     const speaking = speakingId === item.id;
     return (
       <View style={s.botBubble}>
-        <Text style={s.botText} selectable>
-          {cleanForDisplay(item.text)}
-        </Text>
+        <Markdown text={item.text} />
+        {item.truncated && <Text style={s.truncated}>Jawaban terpotong karena batas panjang. Tanyakan bagian yang ingin diperjelas.</Text>}
         <View style={s.botFooter}>
-          <Text style={s.metaText}>Saran AI · bukan diagnosis pasti</Text>
+          <Text style={s.metaText}>Panion{item.model ? ` · ${item.model}` : ''} · saran AI, bukan diagnosis pasti</Text>
           <Pressable
             onPress={() => (speaking ? stopSpeaking() : speak(item))}
             style={s.speakBtn}
@@ -310,7 +316,7 @@ export function AssistantScreen({ active, onOpenSettings }: { active: boolean; o
       <View style={s.header}>
         <View style={{ flex: 1 }}>
           <Text style={s.title} accessibilityRole="header">
-            Asisten tanaman
+            Panion
           </Text>
           <Text style={s.sub}>Gemini · {status?.assistant.configured === false ? 'belum dikonfigurasi di server' : status?.assistant.model ?? '—'}</Text>
         </View>
@@ -474,7 +480,8 @@ const s = StyleSheet.create({
   retry: { flexDirection: 'row', gap: 4, alignItems: 'center', marginTop: 6, minHeight: 32 },
   retryText: { color: colors.danger, fontWeight: '700', fontSize: 13 },
   botBubble: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: radius.lg, borderBottomLeftRadius: 4, padding: space.md, maxWidth: '94%' },
-  botText: { fontSize: 15, lineHeight: 22, color: colors.text },
+  truncated: { fontSize: 12, color: colors.warn, marginTop: space.xs },
+  errorHint: { fontSize: 12, color: colors.danger, marginTop: 4, opacity: 0.85 },
   botFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: space.sm, gap: space.sm },
   speakBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 36, paddingHorizontal: 6 },
   speakText: { color: colors.primaryDark, fontWeight: '600', fontSize: 13 },

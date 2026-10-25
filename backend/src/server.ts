@@ -37,12 +37,15 @@ async function main() {
   });
 
   const relays = new RelayService(gateway, { topic: config.MQTT_RELAY_TOPIC });
-  const assistant = new GeminiAssistant(
-    config.GEMINI_API_KEY,
-    config.GEMINI_MODEL,
-    config.GEMINI_TIMEOUT_MS,
-    ThinkingLevel[config.GEMINI_THINKING_LEVEL],
-  );
+  const assistant = new GeminiAssistant({
+    apiKey: config.GEMINI_API_KEY,
+    model: config.GEMINI_MODEL,
+    fallbackModel: config.GEMINI_FALLBACK_MODEL,
+    timeoutMs: config.GEMINI_TIMEOUT_MS,
+    totalTimeoutMs: config.GEMINI_TOTAL_TIMEOUT_MS,
+    maxRetries: config.GEMINI_MAX_RETRIES,
+    thinkingLevel: ThinkingLevel[config.GEMINI_THINKING_LEVEL],
+  });
   if (!assistant.isConfigured()) logger.warn('GEMINI_API_KEY not set; assistant endpoints will return 503');
   if (!config.MQTT_USERNAME || !config.MQTT_PASSWORD) logger.warn('MQTT credentials not set; broker will likely reject the connection');
 
@@ -53,11 +56,12 @@ async function main() {
     assistant,
     brokerStatus: () => gateway.getStatus(),
     topics: { sensor: config.MQTT_SENSOR_TOPIC, relay: config.MQTT_RELAY_TOPIC },
+    history: { maxTurns: config.CHAT_HISTORY_TURNS, maxChars: config.CHAT_HISTORY_CHARS },
   });
 
   gateway.start();
   const server = app.listen(config.PORT, config.HOST, () => {
-    logger.info('backend listening', { host: config.HOST, port: config.PORT, model: config.GEMINI_MODEL });
+    logger.info('backend listening', { host: config.HOST, port: config.PORT, model: config.GEMINI_MODEL, fallbackModel: config.GEMINI_FALLBACK_MODEL ?? null });
   });
 
   const snapshotTimer = setInterval(() => {

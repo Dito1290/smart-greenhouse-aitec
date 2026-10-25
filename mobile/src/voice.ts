@@ -11,11 +11,6 @@ export function cleanForSpeech(text: string): string {
     .trim();
 }
 
-/** Remove heavy markdown for display while keeping line structure. */
-export function cleanForDisplay(text: string): string {
-  return text.replace(/\*\*(.*?)\*\*/g, '$1').replace(/^#{1,6}\s*/gm, '').trim();
-}
-
 /** Split long text on sentence/line boundaries so each chunk fits the platform TTS limit. */
 export function chunkForSpeech(text: string, max = 3000): string[] {
   const parts = text.split(/(?<=[.!?\n])\s+/);

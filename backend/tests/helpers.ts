@@ -1,4 +1,4 @@
-import type { Assistant, ChatTurn } from '../src/assistant/gemini.js';
+import type { Assistant, AssistantReply, ChatTurn } from '../src/assistant/gemini.js';
 
 export const VALID_PAYLOAD = {
   TDS: 812.4,
@@ -22,10 +22,10 @@ export class FakeAssistant implements Assistant {
   isConfigured() {
     return this.configured;
   }
-  async answer(userTurn: string, history: ChatTurn[]) {
+  async answer(userTurn: string, history: ChatTurn[]): Promise<AssistantReply> {
     this.calls.push({ userTurn, history });
     if (this.failWith) throw this.failWith;
-    return this.reply;
+    return { text: this.reply, model: this.model, attempts: 1, truncated: false };
   }
   async transcribe() {
     if (this.failWith) throw this.failWith;

@@ -73,9 +73,9 @@ describe('HTTP API', () => {
       .set(auth)
       .send({ message: 'Apa arti nilai TDS yang terbaca?', profile: { species: 'Tomat' }, history: [{ role: 'user', text: 'halo' }, { role: 'model', text: 'hai' }] })
       .expect(200);
-    expect(res.body).toMatchObject({ reply: 'jawaban uji', context: { attached: true, dataState: 'fresh' } });
+    expect(res.body).toMatchObject({ reply: 'jawaban uji', model: 'fake-model', truncated: false, context: { attached: true, dataState: 'fresh', historyUsed: 2 } });
     const call = ctx.assistant.calls[0];
-    expect(call.userTurn).toContain('[TDS]: 812.40 ppm');
+    expect(call.userTurn).toContain('[TDS]: 812.40 ppm (satuan diasumsikan)');
     expect(call.userTurn).toContain('Jenis tanaman: Tomat');
     expect(call.userTurn).toContain('Apa arti nilai TDS yang terbaca?');
     expect(call.history).toHaveLength(2);
@@ -85,7 +85,7 @@ describe('HTTP API', () => {
   it('surfaces assistant failures instead of a fabricated answer', async () => {
     ctx.assistant.failWith = new AssistantError('not_configured', 503, 'Gemini belum dikonfigurasi');
     const res = await request(ctx.app).post('/api/assistant/chat').set(auth).send({ message: 'halo' }).expect(503);
-    expect(res.body).toEqual({ error: 'not_configured', message: 'Gemini belum dikonfigurasi' });
+    expect(res.body).toEqual({ error: 'not_configured', message: 'Gemini belum dikonfigurasi', retryable: false, retryAfterSec: null });
     await request(ctx.app).post('/api/assistant/chat').set(auth).send({ message: '   ' }).expect(400);
   });
 

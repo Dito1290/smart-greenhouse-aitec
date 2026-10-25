@@ -3,6 +3,7 @@ import { rateLimit } from 'express-rate-limit';
 import { timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
 import { AssistantError, NO_SPEECH, type Assistant } from '../assistant/gemini.js';
+import { normalizeHistory, type HistoryLimits } from '../assistant/history.js';
 import { buildUserTurn, type SensorSnapshot } from '../assistant/prompt.js';
 import { logger } from '../logger.js';
 import type { BrokerStatus } from '../mqtt/gateway.js';
@@ -17,18 +18,21 @@ export interface AppDeps {
   assistant: Assistant;
   brokerStatus: () => BrokerStatus;
   topics: { sensor: string; relay: string };
+  history?: HistoryLimits;
+  now?: () => number;
 }
 
 const MAX_HISTORY_POINTS = 500;
 const RECENT_CONTEXT_MS = 30 * 60 * 1000;
+const LONG_CONTEXT_MS = 6 * 60 * 60 * 1000;
+const MAX_MESSAGE_CHARS = 2000;
+const DEFAULT_HISTORY: HistoryLimits = { maxTurns: 12, maxChars: 16000 };
 const AUDIO_MIME = ['audio/mp4', 'audio/m4a', 'audio/x-m4a', 'audio/aac', 'audio/mpeg', 'audio/wav', 'audio/webm', 'audio/3gpp', 'audio/ogg'];
 
 const chatSchema = z.object({
-  message: z.string().trim().min(1).max(2000),
-  history: z
-    .array(z.object({ role: z.enum(['user', 'model']), text: z.string().max(8000) }))
-    .max(16)
-    .default([]),
+  message: z.string().trim().min(1).max(MAX_MESSAGE_CHARS),
+  // Entries are validated and trimmed by normalizeHistory; bad entries are dropped, not fatal.
+  history: z.array(z.unknown()).max(100).default([]),
   profile: z
     .object({
       species: z.string().max(120).optional(),
@@ -48,6 +52,15 @@ function tokenMatches(given: string, expected: string) {
   const a = Buffer.from(given);
   const b = Buffer.from(expected);
   return a.length === b.length && timingSafeEqual(a, b);
+}
+
+function assistantFailure(res: Response, err: AssistantError) {
+  res.status(err.httpStatus).json({
+    error: err.code,
+    message: err.message,
+    retryable: err.retryable,
+    retryAfterSec: err.retryAfterMs ? Math.ceil(err.retryAfterMs / 1000) : null,
+  });
 }
 
 function limiter(limit: number, windowMs = 60_000) {
@@ -81,12 +94,23 @@ export function createApp(deps: AppDeps) {
   });
   app.use('/api', limiter(300));
 
-  const snapshot = (): SensorSnapshot => ({
-    latest: deps.store.getLatest(),
-    freshness: deps.store.freshness(),
-    recent: deps.store.getHistory(RECENT_CONTEXT_MS),
-    brokerConnected: deps.brokerStatus().connected,
-  });
+  const historyLimits = deps.history ?? DEFAULT_HISTORY;
+
+  // Built per request from live state; nothing conversation-specific is stored server-side.
+  const snapshot = (): SensorSnapshot => {
+    const broker = deps.brokerStatus();
+    return {
+      latest: deps.store.getLatest(),
+      freshness: deps.store.freshness(),
+      recent: deps.store.getHistory(RECENT_CONTEXT_MS),
+      longer: deps.store.getHistory(LONG_CONTEXT_MS),
+      brokerConnected: broker.connected,
+      broker,
+      relays: deps.relays.snapshot(),
+      ingest: { counters: deps.store.counters, lastRejection: deps.store.lastRejection },
+      topics: deps.topics,
+    };
+  };
 
   app.get('/api/status', (_req, res) => {
     const latest = deps.store.getLatest();
@@ -153,29 +177,36 @@ export function createApp(deps: AppDeps) {
     }
   });
 
-  app.post('/api/assistant/chat', limiter(15), express.json({ limit: '64kb' }), async (req, res) => {
+  app.post('/api/assistant/chat', limiter(15), express.json({ limit: '128kb' }), async (req, res) => {
     const parsed = chatSchema.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: 'invalid_request', message: 'Pertanyaan kosong atau terlalu panjang.' });
+      const tooLong = typeof req.body?.message === 'string' && req.body.message.trim().length > MAX_MESSAGE_CHARS;
+      res.status(400).json({
+        error: 'invalid_request',
+        message: tooLong ? `Pertanyaan terlalu panjang (maks ${MAX_MESSAGE_CHARS} karakter).` : 'Pertanyaan kosong atau format permintaan tidak valid.',
+      });
       return;
     }
-    const { message, history, profile } = parsed.data;
+    const { message, profile } = parsed.data;
+    const history = normalizeHistory(parsed.data.history, historyLimits);
     const snap = snapshot();
     try {
-      const reply = await deps.assistant.answer(buildUserTurn(message, snap, profile), history);
+      const reply = await deps.assistant.answer(buildUserTurn(message, snap, profile, deps.now?.()), history);
       res.json({
-        reply,
-        model: deps.assistant.model,
+        reply: reply.text,
+        model: reply.model,
+        truncated: reply.truncated,
         context: {
           attached: true,
           dataState: snap.freshness.state,
           readingAt: snap.latest?.receivedAt ?? null,
           recentCount: snap.recent.length,
+          historyUsed: history.length,
         },
       });
     } catch (err) {
       if (err instanceof AssistantError) {
-        res.status(err.httpStatus).json({ error: err.code, message: err.message });
+        assistantFailure(res, err);
         return;
       }
       throw err;
@@ -197,7 +228,7 @@ export function createApp(deps: AppDeps) {
       res.json({ text });
     } catch (err) {
       if (err instanceof AssistantError) {
-        res.status(err.httpStatus).json({ error: err.code, message: err.message });
+        assistantFailure(res, err);
         return;
       }
       throw err;
@@ -209,8 +240,12 @@ export function createApp(deps: AppDeps) {
   });
 
   app.use((err: Error & { type?: string; status?: number }, _req: Request, res: Response, _next: NextFunction) => {
-    if (err.type === 'entity.parse.failed' || err.type === 'entity.too.large') {
-      res.status(err.status ?? 400).json({ error: 'bad_body', message: 'Isi permintaan tidak valid.' });
+    if (err.type === 'entity.too.large') {
+      res.status(413).json({ error: 'too_large', message: 'Permintaan terlalu besar. Persingkat pertanyaan atau mulai percakapan baru.' });
+      return;
+    }
+    if (err.type === 'entity.parse.failed') {
+      res.status(400).json({ error: 'bad_body', message: 'Isi permintaan tidak valid.' });
       return;
     }
     logger.error('unhandled request error', { error: err.message });

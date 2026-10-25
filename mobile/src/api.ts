@@ -3,6 +3,9 @@ export class ApiError extends Error {
     readonly code: string,
     message: string,
     readonly status = 0,
+    /** From the server's error body: whether trying again later can succeed. */
+    readonly retryable?: boolean,
+    readonly retryAfterSec?: number | null,
   ) {
     super(message);
   }
@@ -54,7 +57,13 @@ export async function apiRequest<T>(
   }
   if (!res.ok) {
     if (res.status === 401) throw new ApiError('unauthorized', 'Token akses ditolak server. Periksa token di Pengaturan.', 401);
-    throw new ApiError(data?.error ?? 'http_error', data?.message ?? `Server membalas galat ${res.status}.`, res.status);
+    throw new ApiError(
+      data?.error ?? 'http_error',
+      data?.message ?? `Server membalas galat ${res.status}.`,
+      res.status,
+      typeof data?.retryable === 'boolean' ? data.retryable : undefined,
+      typeof data?.retryAfterSec === 'number' ? data.retryAfterSec : null,
+    );
   }
   return data as T;
 }

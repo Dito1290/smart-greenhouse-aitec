@@ -90,14 +90,17 @@ Edit `backend/.env`:
 | `MQTT_USERNAME` / `MQTT_PASSWORD` | the broker account (e.g. `septa2` + its password) |
 | `MQTT_CLIENT_ID` | leave empty (random). **Must not equal the ESP32's client id** or the broker will kick one of them off |
 | `GEMINI_API_KEY` | from Google AI Studio |
-| `GEMINI_MODEL` | default `gemini-3.5-flash` (`gemini-3.8-flash` returned 503 "high demand" on 2026-10-23); change here only |
+| `GEMINI_MODEL` | default `gemini-3.6-flash` (Google's listed replacement for `gemini-3.5-flash`; verified 2026-10-25 with `models.get` + live calls). `gemini-3.8-flash` returned 503 on 2026-10-23 and 504 `DEADLINE_EXCEEDED` on 2/3 calls on 2026-10-25 |
+| `GEMINI_FALLBACK_MODEL` | optional, e.g. `gemini-3.5-flash-lite`; tried after the primary keeps failing with transient errors or its (per-model) daily quota is exhausted. Replies report which model answered |
+| `GEMINI_MAX_RETRIES` / `GEMINI_TIMEOUT_MS` / `GEMINI_TOTAL_TIMEOUT_MS` | defaults 2 / 30000 / 45000. Retries apply only to 429/5xx/timeout/network errors, with exponential backoff + jitter and `Retry-After`/`RetryInfo` honoured; the total stays under the app's 60 s timeout |
+| `CHAT_HISTORY_TURNS` / `CHAT_HISTORY_CHARS` | defaults 12 / 16000. Conversation history comes from the app per request; the server stores none |
 | `GEMINI_THINKING_LEVEL` | `LOW` (default), `MEDIUM`, `HIGH`. Higher = slower. `MINIMAL` was rejected by `gemini-3.8-flash` (400), so it is not offered |
 | `STALE_AFTER_MS` | default 20000 (4 × the 5 s publish interval) |
 
 Run:
 
 ```bash
-npm test          # 31 tests, incl. end-to-end against an in-process MQTT broker
+npm test          # 85 tests, incl. end-to-end against an in-process MQTT broker; Gemini is mocked
 npm run build
 npm start         # or: npm run dev
 ```
@@ -117,7 +120,11 @@ In `/api/status`, `broker.connected: true` means the broker accepted the credent
 - Put the key **only** in `backend/.env` (git-ignored). It is never sent to the phone and
   never logged.
 - If the model ID is retired, change `GEMINI_MODEL`. The app shows a specific error
-  ("Model Gemini … tidak ditemukan") instead of a fake answer.
+  ("Model Gemini … tidak tersedia") instead of a fake answer.
+- Provider errors reach the app as `{ error, message, retryable, retryAfterSec }`. Codes:
+  `unavailable` (503), `rate_limited` (429), `timeout` (504), `network` (502) are temporary;
+  `auth`, `model_config`, `quota_exhausted`, `bad_request`, `not_configured` need the admin.
+  Logs record status, RPC reason, attempt and timing per attempt; never the key or the prompt.
 
 ---
 
@@ -230,7 +237,7 @@ These ran against a **local** test broker with a simulated ESP32, not the real d
 |---|---|
 | Real ESP32 data via `sdp.polinela.ac.id` | No broker password; anonymous access is refused |
 | Real relay actuation | No hardware access |
-| Live Gemini answers | Tested 2026-10-23 with the real key: `gemini-3.5-flash` + LOW answered in ~5 s; transcription not re-tested |
+| Live Gemini answers | 2026-10-25 with the real key and a synthetic reading: `gemini-3.6-flash` + LOW answered the Panion prompt and a follow-up; one real 503 was retried and recovered; a later real 429 daily-quota error was classified `quota_exhausted` and not retried. Not exercised from the phone; transcription not re-tested |
 | App on a physical phone / Expo Go | No device or emulator on this Mac. The bundle compiles, but microphone permission, recording, and TTS playback have **not** been exercised |
 | iOS | Not built |
 | Relay buttons' confirmation dialog | `Alert` is a no-op in the web preview; verify on the phone |
